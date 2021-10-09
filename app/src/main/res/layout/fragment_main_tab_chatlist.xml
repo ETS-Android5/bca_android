@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/fr_chatList_toolbarContainer"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/fr_chatList_divider1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center|center_horizontal">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/fr_chatList_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:contentInsetStart="0dp"
+            app:contentInsetStartWithNavigation="0dp"
+            app:title="메시지"
+            app:menu="@menu/toolbar_chatlist"
+            app:navigationIcon="@drawable/ic_menu" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="28dp"
+            android:layout_marginBottom="8dp" >
+
+            <Button
+                android:id="@+id/fr_chatList_sortListMenuBtn"
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_alignParentRight="true"
+                android:paddingVertical="0dp"
+                android:drawableLeft="@drawable/ic_sort_alphabetical_ascending"
+                android:textColor="@color/black"
+                android:backgroundTint="@color/transparent"
+                android:text="이름 순 정렬"
+                style="?android:attr/borderlessButtonStyle" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/fr_chatList_divider1"
+        style="@style/Divider"
+        android:layout_marginHorizontal="8dp"
+        app:layout_constraintTop_toBottomOf="@id/fr_chatList_toolbarContainer"
+        app:layout_constraintBottom_toTopOf="@id/fr_chatList_chatListRecyclerView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/fr_chatList_chatListRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginVertical="0.5dp"
+        app:layout_constraintTop_toBottomOf="@id/fr_chatList_divider1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:listitem="@layout/listitem_chatlist" />
+</androidx.constraintlayout.widget.ConstraintLayout>

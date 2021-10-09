@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="4dp" >
+
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/li_chatRoomMessageGroup_profileImage"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_margin="4dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_launcher_background"
+        app:civ_border="false" />
+
+    <TextView
+        android:id="@+id/li_chatRoomMessageGroup_profileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/li_chatRoomMessageGroup_profileImage"
+        android:layout_marginVertical="4dp"
+        android:layout_marginHorizontal="8dp"
+        tools:text="장서희"
+        android:textColor="@color/black" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/li_chatRoomMessageGroup_messageBubbleRecyclerView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/li_chatRoomMessageGroup_profileName"
+        app:layout_constraintRight_toLeftOf="@id/li_chatRoomMessageGroup_profileImage"
+        android:layout_margin="4dp"
+        android:gravity="right"
+        tools:listitem="@layout/listitem_chatroom_messagebubble_mine"
+        tools:itemCount="2" />
+</androidx.constraintlayout.widget.ConstraintLayout>

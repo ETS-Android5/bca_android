@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/me_navheader_createNewProfileItem"
+        android:title="새 프로필 만들기" />
+</menu>

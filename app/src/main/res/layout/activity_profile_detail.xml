@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:fitsSystemWindows="true"
+        app:contentScrim="@color/transparent"
+        android:background="@color/transparent"
+        android:backgroundTint="@color/transparent" >
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/ac_profileDetail_collapsingToolbarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            app:contentScrim="@color/white"
+            app:scrimAnimationDuration="@integer/material_motion_duration_short_2"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlways"
+            app:expandedTitleGravity="start|top"
+            app:expandedTitleMarginTop="308dp"
+            app:expandedTitleMarginStart="96dp" >
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="?attr/actionBarSize"
+                > <!--app:layout_collapseMode="parallax"-->
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/ac_profileDetail_profileCardRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="240dp"
+                    android:layout_marginBottom="16dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/ac_profileDetail_teamNameText"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:transitionName="card"
+
+                    android:orientation="horizontal"
+                    android:layout_centerInParent="true"
+                    android:clipToPadding="false"
+                    android:paddingStart="35dp"
+                    android:paddingEnd="35dp"
+                    tools:listitem="@layout/listitem_profiledetail_card"
+                    />
+
+                <com.mikhaellopez.circularimageview.CircularImageView
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    app:layout_constraintLeft_toLeftOf="@id/ac_profileDetail_teamNameText"
+                    app:layout_constraintBottom_toBottomOf="@id/ac_profileDetail_teamNameText"
+                    android:transitionName="profileImage"
+
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_launcher_background"
+                    app:civ_border_color="@color/gray_200"
+                    />
+
+                <TextView
+                    android:id="@+id/ac_profileDetail_teamNameText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="4dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:gravity="end"
+                    android:text="Solved.AC / 디자이너"
+                    android:textColor="@color/gray"
+                    app:layout_constraintTop_toBottomOf="@id/ac_profileDetail_profileCardRecyclerView"
+                    app:layout_constraintBottom_toTopOf="@id/ac_profileDetail_descriptionText"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    />
+
+                <TextView
+                    android:id="@+id/ac_profileDetail_descriptionText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp"
+                    android:layout_marginHorizontal="16dp"
+                    app:layout_constraintTop_toBottomOf="@id/ac_profileDetail_teamNameText"
+                    app:layout_constraintBottom_toTopOf="@id/ac_profileDetail_divider2"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:text="@string/profile_detail_dummy" />
+
+                <View
+                    style="@style/Divider"
+                    android:id="@+id/ac_profileDetail_divider2"
+                    android:layout_marginHorizontal="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/ac_profileDetail_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:contentInsetStart="0dp"
+                app:contentInsetStartWithNavigation="0dp"
+                android:elevation="0dp"
+                android:textSize="28sp"
+                app:layout_collapseMode="pin"
+                android:navigationIcon="?attr/homeAsUpIndicator"
+                app:navigationIcon="?attr/homeAsUpIndicator"
+                app:title="오리" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/ac_profileDetail_profileInfoRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="0.5dp"
+            tools:listitem="@layout/listitem_profiledetail" />
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

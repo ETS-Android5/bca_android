@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/ac_cardCreate_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintTop_toTopOf="parent"
+        android:navigationIcon="?attr/homeAsUpIndicator"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:menu="@menu/toolbar_cardcreate"
+        app:title="명함 생성" />
+
+    <View
+        android:id="@+id/ac_cardCreate_divider1"
+        style="@style/Divider"
+        android:layout_marginHorizontal="8dp"
+        app:layout_constraintTop_toBottomOf="@id/ac_cardCreate_toolbar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+
+    <ImageButton
+        android:id="@+id/ac_cardCreate_cardImageView"
+        android:layout_width="300dp"
+        android:layout_height="474dp"
+        android:scaleType="centerCrop"
+
+        app:layout_constraintTop_toBottomOf="@id/ac_cardCreate_divider1"
+        app:layout_constraintBottom_toTopOf="@id/ac_cardCreate_cardNameFieldContainer"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+
+        android:backgroundTint="@color/transparent"
+        android:src="@drawable/card_test"
+        />
+
+
+    <LinearLayout
+        android:id="@+id/ac_cardCreate_cardNameFieldContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="84dp"
+        android:paddingVertical="4dp"
+        android:paddingHorizontal="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" >
+
+        <EditText
+            android:id="@+id/ac_cardCreate_cardNameField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:hint="명함을 가리킬 이름을 입력해주세요" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

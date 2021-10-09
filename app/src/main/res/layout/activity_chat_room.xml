@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.appcompat.widget.Toolbar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/ac_chatRoom_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:navigationIcon="?attr/homeAsUpIndicator"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:menu="@menu/toolbar_chatroom"
+        app:title="장서희" />
+
+    <View
+        android:id="@+id/ac_chatRoom_divider1"
+        style="@style/Divider"
+        android:layout_marginHorizontal="8dp"
+        app:layout_constraintBottom_toTopOf="@id/ac_chatRoom_chatRecyclerView"
+        app:layout_constraintTop_toBottomOf="@id/ac_chatRoom_toolbar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/ac_chatRoom_chatRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginVertical="0.5dp"
+        android:paddingHorizontal="4dp"
+        app:layout_constraintTop_toBottomOf="@id/ac_chatRoom_divider1"
+        app:layout_constraintBottom_toTopOf="@id/ac_chatRoom_divider2"
+        tools:listitem="@layout/listitem_chatroom_messagegroup_other" />
+
+    <View
+        android:id="@+id/ac_chatRoom_divider2"
+        style="@style/Divider"
+        android:layout_marginHorizontal="8dp"
+        app:layout_constraintBottom_toTopOf="@id/ac_chatRoom_messageInputFieldContainer"
+        app:layout_constraintTop_toBottomOf="@id/ac_chatRoom_chatRecyclerView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/ac_chatRoom_messageInputFieldContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
+        android:paddingVertical="4dp"
+        android:paddingHorizontal="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" >
+
+        <EditText
+            android:id="@+id/ac_chatRoom_messageInputField"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:hint="메시지를 입력해주세요" />
+
+        <ImageButton
+            android:id="@+id/ac_chatRoom_messageSendBtn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="9"
+            android:backgroundTint="@color/transparent"
+            android:src="@drawable/ic_send" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

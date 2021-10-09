@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/box_roundborder_shadow"
+    android:orientation="vertical"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="24dp" >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/li_profileCreateFieldGroup_dragMoveBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/ic_menu"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:backgroundTint="@color/transparent" />
+
+        <TextView
+            android:id="@+id/li_profileCreateFieldGroup_groupNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@id/li_profileCreateFieldGroup_dragMoveBtn"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:maxLines="1"
+            tools:text="전화번호"
+            android:textColor="@color/black"
+            android:textSize="20dp" />
+
+        <ImageButton
+            android:id="@+id/li_profileCreateFieldGroup_addFieldBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintRight_toLeftOf="@id/li_profileCreateFieldGroup_deleteGroupBtn"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/ic_add_button"
+            android:backgroundTint="@color/transparent"
+            app:tint="@color/black" />
+
+        <ImageButton
+            android:id="@+id/li_profileCreateFieldGroup_deleteGroupBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/ic_baseline_delete"
+            android:backgroundTint="@color/transparent"
+            app:tint="@color/black" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/li_profileCreateFieldGroup_fieldRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/listitem_profilecreate_field"
+        tools:itemCount="3"
+        android:layout_marginHorizontal="16dp" />
+</LinearLayout>

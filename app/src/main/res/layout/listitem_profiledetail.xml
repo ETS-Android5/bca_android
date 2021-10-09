@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:orientation="vertical"
+    android:layout_marginHorizontal="@dimen/activity_horizontal_margin">
+
+    <TextView
+        android:id="@+id/li_profileDetail_infoTitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="8dp"
+        android:maxLines="1"
+        android:textColor="@color/gray_600"
+        android:text="전화번호(회사)"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/li_profileDetail_infoContentText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginHorizontal="8dp"
+        android:maxLines="1"
+        tools:text="010-0000-0000"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <View
+        android:layout_marginTop="12dp"
+        style="@style/Divider"/>
+</LinearLayout>
