@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cc.mudev.bca_alter" >
+    package="cc.mudev.bca_android" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -12,40 +12,40 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BCa_alter" >
+        android:theme="@style/Theme.BCa_android" >
 
 
-        <activity android:name=".activity.debug.DebugNetworkActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.debug.DebugNetworkActivity" />
 
-        <activity android:name=".activity.core.CoreSplashActivity" />
-        <activity android:name=".activity.core.CoreFrontActivity">
+        <activity android:name="cc.mudev.bca_android.activity.core.CoreSplashActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.core.CoreFrontActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.core.CoreLoginActivity" />
-        <activity android:name=".activity.core.CoreResetMyPasswordActivity" />
-        <activity android:name=".activity.core.CoreRegisterActivity" />
-        <activity android:name=".activity.core.CoreSettingActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.core.CoreLoginActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.core.CoreResetMyPasswordActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.core.CoreRegisterActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.core.CoreSettingActivity" />
 
-        <activity android:name=".activity.account.AccountStatusActivity" />
-        <activity android:name=".activity.account.AccountSettingActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.account.AccountStatusActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.account.AccountSettingActivity" />
 
-        <activity android:name=".activity.card.CardShareQRcodeActivity" />
-        <activity android:name=".activity.card.CardSubscribeActivity" />
-        <activity android:name=".activity.card.CardDetailActivity" />
-        <activity android:name=".activity.card.CardCreateActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.card.CardShareQRcodeActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.card.CardSubscribeActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.card.CardDetailActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.card.CardCreateActivity" />
 
-        <activity android:name=".activity.chat.ChatCreateActivity" />
-        <activity android:name=".activity.chat.ChatRoomActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.chat.ChatCreateActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.chat.ChatRoomActivity" />
 
-        <activity android:name=".activity.main.MainActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.main.MainActivity" />
 
-        <activity android:name=".activity.profile.ProfileCreateActivity" />
-        <activity android:name=".activity.profile.ProfileDetailActivity" />
-        <activity android:name=".activity.profile.ProfileBlockedActivity" />
-        <activity android:name=".activity.profile.ProfileSettingActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.profile.ProfileCreateActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.profile.ProfileDetailActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.profile.ProfileBlockedActivity" />
+        <activity android:name="cc.mudev.bca_android.activity.profile.ProfileSettingActivity" />
     </application>
 
 </manifest>

@@ -56,8 +56,9 @@
             android:id="@+id/ac_cardCreate_cardNameField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="명함을 가리킬 이름을 입력해주세요"
             android:inputType="text"
-            android:hint="명함을 가리킬 이름을 입력해주세요" />
+            android:minHeight="48dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
