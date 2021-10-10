@@ -14,6 +14,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BCa_android" >
 
+        <!-- Set custom default icon for FCM -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_launcher_foreground" />
+        <!-- Set color used with incoming notification messages for FCM -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/lightblue_A700" />
+        <!-- Set color used with incoming notification messages for FCM -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
+        <!-- Disable auto initialization(re-new) of FCM token -->
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
+
 
         <activity android:name="cc.mudev.bca_android.activity.debug.DebugNetworkActivity" />
 
@@ -48,6 +68,16 @@
         <activity android:name="cc.mudev.bca_android.activity.profile.ProfileDetailActivity" />
         <activity android:name="cc.mudev.bca_android.activity.profile.ProfileBlockedActivity" />
         <activity android:name="cc.mudev.bca_android.activity.profile.ProfileSettingActivity" />
+
+        <!-- FCM service -->
+        <service
+            android:name="cc.mudev.bca_android.service.FCMHandlerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

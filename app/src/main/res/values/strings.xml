@@ -8,6 +8,10 @@
         <item>"SNS"</item>
     </string-array>
 
+    <string name="default_notification_channel_id">bca_fcm_server_push</string>
+    <string name="default_notification_channel_name">B.Ca 메시지 및 동기화 알림</string>
+    <string name="default_notification_channel_description">메시지 및 상대방의 프로필 정보 변경 시에 알림을 받는 채널입니다.</string>
+
     <!--  test strings  -->
     <string name="profile_detail_dummy">
         Freelance Technical Artist ,/n VFX Artist, Media Artist / Unity Masters(Korea)/ UE4 / Houdini / Madumpa Technical Art laboratory / contact : annonymous@gmail.com

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "619255481611",
+    "project_id": "mudev-coop-bca",
+    "storage_bucket": "mudev-coop-bca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:619255481611:android:35c53cb2de341e41364e0e",
+        "android_client_info": {
+          "package_name": "cc.mudev.bca_android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "619255481611-sjsf3rmvcpr4oqku54s0l8bomtp6553p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWFl023l1xZG7jKcJi9vzu0UAdU8mXBCA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "619255481611-sjsf3rmvcpr4oqku54s0l8bomtp6553p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
