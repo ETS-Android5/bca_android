@@ -1,2 +1,2 @@
-rootProject.name = "BCa_alter"
+rootProject.name = "BCa_android"
 include ':app'
