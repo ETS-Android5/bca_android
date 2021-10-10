@@ -17,13 +17,15 @@
 
         <activity android:name="cc.mudev.bca_android.activity.debug.DebugNetworkActivity" />
 
-        <activity android:name="cc.mudev.bca_android.activity.core.CoreSplashActivity" />
-        <activity android:name="cc.mudev.bca_android.activity.core.CoreFrontActivity">
+        <activity
+            android:theme="@style/SplashTheme"
+            android:name="cc.mudev.bca_android.activity.core.CoreSplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="cc.mudev.bca_android.activity.core.CoreFrontActivity" />
         <activity android:name="cc.mudev.bca_android.activity.core.CoreLoginActivity" />
         <activity android:name="cc.mudev.bca_android.activity.core.CoreResetMyPasswordActivity" />
         <activity android:name="cc.mudev.bca_android.activity.core.CoreRegisterActivity" />
