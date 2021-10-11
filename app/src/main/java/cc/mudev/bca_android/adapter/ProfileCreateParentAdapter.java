@@ -99,7 +99,7 @@ public class ProfileCreateParentAdapter extends RecyclerView.Adapter<ProfileCrea
 
     @Override
     public void onBindViewHolder(ProfileCreateParentAdapter.ProfileCreateParentViewHolder holder, int position) {
-        ProfileCreateParentData profileCreateParentData = profileCreateParentDataList.get(position);
+        ProfileCreateParentData profileCreateParentData = profileCreateParentDataList.get(holder.getAdapterPosition());
         holder.profileCreateParentData = profileCreateParentData;
         holder.groupNameTextView.setText(profileCreateParentData.childDataName);
         holder.fieldRecyclerView.setAdapter(profileCreateParentData.profileCreateChildAdapter);
@@ -120,7 +120,7 @@ public class ProfileCreateParentAdapter extends RecyclerView.Adapter<ProfileCrea
                     .setPositiveButton("삭제", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
-                            holder.profileCreateParentAdapter.onItemRemove(position);
+                            holder.profileCreateParentAdapter.onItemRemove(holder.getAdapterPosition());
                         }
                     })
                     .setNegativeButton("취소", new DialogInterface.OnClickListener() {

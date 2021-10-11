@@ -55,7 +55,7 @@ public class ProfileCreateChildAdapter extends RecyclerView.Adapter<ProfileCreat
 
     @Override
     public void onBindViewHolder(ProfileCreateChildViewHolder holder, int position) {
-        ProfileCreateChildData profileCreateChildData = this.profileCreateChildDataList.get(position);
+        ProfileCreateChildData profileCreateChildData = this.profileCreateChildDataList.get(holder.getAdapterPosition());
 
         holder.profileCreateChildData = profileCreateChildData;
         holder.key.setText(profileCreateChildData.key);
@@ -95,7 +95,7 @@ public class ProfileCreateChildAdapter extends RecyclerView.Adapter<ProfileCreat
         holder.deleteFieldBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                holder.profileCreateChildAdapter.onItemRemove(position);
+                holder.profileCreateChildAdapter.onItemRemove(holder.getAdapterPosition());
             }
         });
         holder.moveFieldBtn.setOnTouchListener(new View.OnTouchListener() {
