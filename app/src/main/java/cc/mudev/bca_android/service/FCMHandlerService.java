@@ -17,11 +17,10 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
-
 import cc.mudev.bca_android.R;
 import cc.mudev.bca_android.activity.core.CoreSplashActivity;
+import cc.mudev.bca_android.dataStorage.SharedPref;
+import cc.mudev.bca_android.network.BCaAPI.AccountAPI;
 
 /**
  * NOTE: There can only be one service in each app that receives FCM messages. If multiple
@@ -132,14 +131,13 @@ public class FCMHandlerService extends FirebaseMessagingService {
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) {
-        // TODO: Implement this method to send token to your app server.
+        try {
+            SharedPref.getInstance(getApplicationContext()).setPref(SharedPref.SharedPrefKeys.FCM, token);
+            AccountAPI.isRefreshSuccess(getApplicationContext()).get();
+        } catch (Exception e) {
+        }
     }
 
-    /**
-     * Create and show a simple notification containing the received FCM message.
-     *
-     * @param messageBody FCM message body received.
-     */
     public void sendNotification(String messageTitle, String messageBody) {
         Intent intent = new Intent(this, CoreSplashActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -175,13 +173,17 @@ public class FCMHandlerService extends FirebaseMessagingService {
 
     public static String getToken(Context context) {
         String result = context.getSharedPreferences("_", MODE_PRIVATE).getString("fb", null);
-        return (result != null) ? result : getTokenRetry(context);
+        return (result != null) ? result : getTokenDetail(context);
     }
 
-    private static String getTokenRetry(Context context) {
-        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
-        String result = context.getSharedPreferences("_", MODE_PRIVATE).getString("fb", null);
-        FirebaseMessaging.getInstance().setAutoInitEnabled(false);
-        return (result != null) ? result : "";
+    private static String getTokenDetail(Context context) {
+        String sharedPrefFCMToken = SharedPref.getInstance(context).getString(SharedPref.SharedPrefKeys.FCM);
+        if (sharedPrefFCMToken == null){
+            FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+            String result = context.getSharedPreferences("_", MODE_PRIVATE).getString("fb", null);
+            FirebaseMessaging.getInstance().setAutoInitEnabled(false);
+            return (result != null) ? result : "";
+        }
+        return sharedPrefFCMToken;
     }
 }

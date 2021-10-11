@@ -10,7 +10,10 @@ public class SharedPref {
         PASSWORD("PASSWORD"),
         EMAIL("EMAIL"),
         NICKNAME("NICKNAME"),
-        REFRESH_TOKEN("REFRESH_TOKEN");
+        REFRESH_TOKEN("REFRESH_TOKEN"),
+
+        // FCM related thing
+        FCM("FIREBASE_CLOUD_MESSAGING_TOKEN");
 
         private final String getSharedPrefKeyName;
 

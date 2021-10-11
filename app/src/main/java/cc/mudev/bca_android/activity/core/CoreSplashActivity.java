@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import cc.mudev.bca_android.R;
+import cc.mudev.bca_android.dataStorage.SharedPref;
 import cc.mudev.bca_android.network.NetworkSupport;
 import cc.mudev.bca_android.service.FCMHandlerService;
 
@@ -29,6 +30,9 @@ public class CoreSplashActivity extends AppCompatActivity {
 
 
         String fcmToken = FCMHandlerService.getToken(getApplicationContext());
+        if (!"".equals(fcmToken)) {
+            SharedPref.getInstance(getApplicationContext()).setPref(SharedPref.SharedPrefKeys.FCM, fcmToken);
+        }
         Log.w("FCMCoreSplashActivity", fcmToken);
 
 //        FCMHandlerService fcmHandlerService = new FCMHandlerService();
