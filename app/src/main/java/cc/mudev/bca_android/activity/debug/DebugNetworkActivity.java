@@ -1,10 +1,12 @@
 package cc.mudev.bca_android.activity.debug;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -29,6 +31,7 @@ import cc.mudev.bca_android.database.ProfileDatabase;
 import cc.mudev.bca_android.network.BCaAPI.AccountAPI;
 import cc.mudev.bca_android.network.BCaAPI.ProfileDBSyncAPI;
 import cc.mudev.bca_android.network.NetworkSupport;
+import cc.mudev.bca_android.service.FCMHandlerService;
 
 public class DebugNetworkActivity extends AppCompatActivity {
     String id, pw, nick, email;
@@ -37,10 +40,12 @@ public class DebugNetworkActivity extends AppCompatActivity {
     Button setClearAccountDataBtn, setSignInDataBtn, setSignUpDataBtn;
     Button signUpBtn, signInBtn, signOutBtn, tokenRefreshBtn;
     Button dbGetHashNetworkBtn, dbGetHashLocalBtn, dbSyncBtn, dbLocalResetBtn, dbNetworkResetBtn;
+    Button refreshTextBtn;
 
     TextView ipText, idText, pwText, emailText, nickText;
     TextView refreshTokenText, accessTokenText, csrfTokenText;
     TextView dbLocalHashText, dbOriginHashText;
+    TextView fcmTokenText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +77,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
         dbLocalHashText = findViewById(R.id.ac_debugNetwork_dbLocalHashText);
         dbOriginHashText = findViewById(R.id.ac_debugNetwork_dbOriginHashText);
 
+        fcmTokenText = findViewById(R.id.ac_debugNetwork_fcmTokenText);
 
         networkPingBtn = findViewById(R.id.ac_debugNetwork_pingBtn);
         signUpBtn = findViewById(R.id.ac_debugNetwork_signUpBtn);
@@ -89,11 +95,20 @@ public class DebugNetworkActivity extends AppCompatActivity {
         dbLocalResetBtn = findViewById(R.id.ac_debugNetwork_dbLocalResetBtn);
         dbNetworkResetBtn = findViewById(R.id.ac_debugNetwork_dbNetworkResetBtn);
 
+        refreshTextBtn = findViewById(R.id.ac_debugNetwork_refreshTextBtn);
+
         this.setOnClickListener(getApplicationContext());
         this.updateText(getApplicationContext());
     }
 
     public void setOnClickListener(Context context) {
+        refreshTextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateText(context);
+            }
+        });
+
         networkPingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,7 +120,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(getApplicationContext(), "PING 성공", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(context, "PING 성공", Toast.LENGTH_LONG).show();
                                         updateText(context);
                                     }
                                 }, 0);
@@ -117,7 +132,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "PING 실패", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "PING 실패", Toast.LENGTH_LONG).show();
                                 updateText(context);
                             }
                         }, 0);
@@ -125,7 +140,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                     }).get();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "PING 실패 - out", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "PING 실패 - out", Toast.LENGTH_LONG).show();
                     updateText(context);
                 }
             }
@@ -141,7 +156,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(getApplicationContext(), "회원가입 성공", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(context, "회원가입 성공", Toast.LENGTH_LONG).show();
                                         updateText(context);
                                     }
                                 }, 0);
@@ -153,7 +168,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "회원가입 실패", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "회원가입 실패", Toast.LENGTH_LONG).show();
                                 updateText(context);
                             }
                         }, 0);
@@ -161,7 +176,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                     }).get();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "회원가입 실패 - out", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "회원가입 실패 - out", Toast.LENGTH_LONG).show();
                     updateText(context);
                 }
             }
@@ -177,7 +192,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(getApplicationContext(), "로그인 성공", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(context, "로그인 성공", Toast.LENGTH_LONG).show();
                                         updateText(context);
                                     }
                                 }, 0);
@@ -189,7 +204,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "로그인 실패", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "로그인 실패", Toast.LENGTH_LONG).show();
                                 updateText(context);
                             }
                         }, 0);
@@ -197,7 +212,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                     }).get();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "로그인 실패 - out", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "로그인 실패 - out", Toast.LENGTH_LONG).show();
                     updateText(context);
                 }
             }
@@ -213,7 +228,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(getApplicationContext(), "로그아웃 성공", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(context, "로그아웃 성공", Toast.LENGTH_LONG).show();
                                         updateText(context);
                                     }
                                 }, 0);
@@ -225,7 +240,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "로그아웃 실패", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_LONG).show();
                                 updateText(context);
                             }
                         }, 0);
@@ -233,7 +248,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                     }).get();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "로그아웃 실패 - out", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "로그아웃 실패 - out", Toast.LENGTH_LONG).show();
                     updateText(context);
                 }
             }
@@ -242,14 +257,17 @@ public class DebugNetworkActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    NetworkSupport networkSupport = NetworkSupport.getInstance();
-                    AccountAPI.isRefreshSuccess().thenAcceptAsync(
+//                    NetworkSupport networkSupport = NetworkSupport.getInstance();
+//                    System.out.println(FCMHandlerService.getToken(context));
+//                    System.out.println(FCMHandlerService.getToken(getApplicationContext()));
+                    System.out.println("WHY IS IT NOT WORKING???");
+                    AccountAPI.isRefreshSuccess(context).thenAcceptAsync(
                             (success) -> {
                                 Handler handler = new Handler(Looper.getMainLooper());
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(getApplicationContext(), success ? "Access 토큰 갱신 성공" : "Access 토큰 갱신 실패", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(context, success ? "Access 토큰 갱신 성공" : "Access 토큰 갱신 실패", Toast.LENGTH_LONG).show();
                                         updateText(context);
                                     }
                                 }, 0);
@@ -261,7 +279,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "Access 토큰 갱신 실패", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "Access 토큰 갱신 실패", Toast.LENGTH_LONG).show();
                                 updateText(context);
                             }
                         }, 0);
@@ -269,7 +287,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                     }).get();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Access 토큰 갱신 실패 - out", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Access 토큰 갱신 실패 - out", Toast.LENGTH_LONG).show();
                     updateText(context);
                 }
             }
@@ -374,7 +392,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                                         handler.postDelayed(new Runnable() {
                                             @Override
                                             public void run() {
-                                                Toast.makeText(getApplicationContext(), "DB 갱신 성공", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(context, "DB 갱신 성공", Toast.LENGTH_LONG).show();
                                                 updateText(context);
                                             }
                                         }, 0);
@@ -389,7 +407,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "DB 갱신 실패", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "DB 갱신 실패", Toast.LENGTH_LONG).show();
                                 updateText(context);
                             }
                         }, 0);
@@ -397,7 +415,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                     }).get();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "DB 갱신 실패 - out", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "DB 갱신 실패 - out", Toast.LENGTH_LONG).show();
                 }
                 updateText(context);
             }
@@ -458,7 +476,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(getApplicationContext(), "서버 DB 초기화 성공", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(context, "서버 DB 초기화 성공", Toast.LENGTH_LONG).show();
                                         updateText(context);
                                     }
                                 }, 0);
@@ -470,7 +488,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "서버 DB 초기화 실패", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "서버 DB 초기화 실패", Toast.LENGTH_LONG).show();
                                 updateText(context);
                             }
                         }, 0);
@@ -478,7 +496,7 @@ public class DebugNetworkActivity extends AppCompatActivity {
                     }).get();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "서버 DB 초기화 실패 - out", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "서버 DB 초기화 실패 - out", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -506,6 +524,10 @@ public class DebugNetworkActivity extends AppCompatActivity {
         refreshTokenText.setText("REFRESH_TOKEN : " + (refreshToken != null ? refreshToken : ""));
         accessTokenText.setText("ACCESS_TOKEN : " + (accessToken != null ? accessToken : ""));
         csrfTokenText.setText("CSRF_TOKEN : " + (csrfToken != null ? csrfToken : ""));
+
+//        fcmTokenText.setText("FCM_TOKEN : " + FCMHandlerService.getToken(context));
+        ;
+        fcmTokenText.setText("FCM_TOKEN : " + SharedPref.getInstance(context).getString(SharedPref.SharedPrefKeys.FCM));
 
         try {
             ProfileDBSyncAPI.getServerDBETag()

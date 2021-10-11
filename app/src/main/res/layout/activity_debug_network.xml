@@ -1,198 +1,216 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:gravity="center"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/ac_debugNetwork_toolbar"
+    android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:layout_constraintTop_toTopOf="parent"
-        android:navigationIcon="?attr/homeAsUpIndicator"
-        app:contentInsetStart="0dp"
-        app:contentInsetStartWithNavigation="0dp"
-        app:title="네트워크 디버그"
-        app:navigationIcon="?attr/homeAsUpIndicator" />
+        android:layout_height="wrap_content" >
 
-    <View
-        android:id="@+id/ac_debugNetwork_divider1"
-        style="@style/Divider"
-        android:layout_marginHorizontal="8dp"
-        app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_toolbar"
-        app:layout_constraintBottom_toTopOf="@id/ac_debugNetwork_ipText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/ac_debugNetwork_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_constraintTop_toTopOf="parent"
+            android:navigationIcon="?attr/homeAsUpIndicator"
+            app:contentInsetStart="0dp"
+            app:contentInsetStartWithNavigation="0dp"
+            app:title="네트워크 디버그"
+            app:navigationIcon="?attr/homeAsUpIndicator" />
 
-    <TextView
-        android:id="@+id/ac_debugNetwork_ipText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_divider1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:text="IP : 127.0.0.1" />
-    <TextView
-        android:id="@+id/ac_debugNetwork_idText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_ipText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:text="ID: musoftware" />
-    <TextView
-        android:id="@+id/ac_debugNetwork_pwText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_idText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:text="PW: qwerty" />
-    <TextView
-        android:id="@+id/ac_debugNetwork_emailText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_pwText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:text="EMAIL: musoftware@daum.net" />
-    <TextView
-        android:id="@+id/ac_debugNetwork_nickText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_emailText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:text="NICK: musoftware" />
-    <TextView
-        android:id="@+id/ac_debugNetwork_refreshTokenText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_nickText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:text="REFRESH_TOKEN: qweqweqwe" />
-    <TextView
-        android:id="@+id/ac_debugNetwork_accessTokenText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_refreshTokenText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:text="ACCESS_TOKEN: qweqweqwe" />
-    <TextView
-        android:id="@+id/ac_debugNetwork_csrfTokenText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_accessTokenText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:text="CSRF_TOKEN: qweqweqwe" />
-    <TextView
-        android:id="@+id/ac_debugNetwork_dbLocalHashText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_csrfTokenText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        <View
+            android:id="@+id/ac_debugNetwork_divider1"
+            style="@style/Divider"
+            android:layout_marginHorizontal="8dp"
+            app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_toolbar"
+            app:layout_constraintBottom_toTopOf="@id/ac_debugNetwork_ipText"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <TextView
+            android:id="@+id/ac_debugNetwork_ipText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_divider1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="IP : 127.0.0.1" />
+        <TextView
+            android:id="@+id/ac_debugNetwork_idText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_ipText"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="ID: musoftware" />
+        <TextView
+            android:id="@+id/ac_debugNetwork_pwText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_idText"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="PW: qwerty" />
+        <TextView
+            android:id="@+id/ac_debugNetwork_emailText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_pwText"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="EMAIL: musoftware@daum.net" />
+        <TextView
+            android:id="@+id/ac_debugNetwork_nickText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_emailText"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="NICK: musoftware" />
+        <TextView
+            android:id="@+id/ac_debugNetwork_refreshTokenText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_nickText"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="REFRESH_TOKEN: qweqweqwe" />
+        <TextView
+            android:id="@+id/ac_debugNetwork_accessTokenText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_refreshTokenText"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="ACCESS_TOKEN: qweqweqwe" />
+        <TextView
+            android:id="@+id/ac_debugNetwork_csrfTokenText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_accessTokenText"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="CSRF_TOKEN: qweqweqwe" />
+        <TextView
+            android:id="@+id/ac_debugNetwork_dbLocalHashText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_csrfTokenText"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="DB_LOCAL_HASH: qweqweqwe" />
+        <TextView
+            android:id="@+id/ac_debugNetwork_dbOriginHashText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_dbLocalHashText"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="DB_ORIGIN_HASH: qweqweqwe" />
         tools:text="DB_LOCAL_HASH: qweqweqwe" />
-    <TextView
-        android:id="@+id/ac_debugNetwork_dbOriginHashText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_dbLocalHashText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:text="DB_ORIGIN_HASH: qweqweqwe" />
+        <TextView
+            android:id="@+id/ac_debugNetwork_fcmTokenText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_dbOriginHashText"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="FCM_TOKEN: qweqweqwe" />
 
-    <View
-        android:id="@+id/ac_debugNetwork_divider2"
-        style="@style/Divider"
-        android:layout_marginHorizontal="8dp"
-        app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_dbOriginHashText"
-        app:layout_constraintBottom_toTopOf="@id/ac_debugNetwork_btnGridLayout"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        <View
+            android:id="@+id/ac_debugNetwork_divider2"
+            style="@style/Divider"
+            android:layout_marginHorizontal="8dp"
+            app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_fcmTokenText"
+            app:layout_constraintBottom_toTopOf="@id/ac_debugNetwork_btnGridLayout"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
 
-    <GridLayout
-        android:id="@+id/ac_debugNetwork_btnGridLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        <GridLayout
+            android:id="@+id/ac_debugNetwork_btnGridLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
 
-        app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_divider2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ac_debugNetwork_divider2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
 
 
-        android:alignmentMode="alignBounds"
-        android:useDefaultMargins="true"
-        android:columnCount="4"
-        >
-        <Button
-            android:layout_gravity="fill"
-            android:id="@+id/ac_debugNetwork_pingBtn"
-            android:layout_columnSpan="2"
-            android:text="PING" />
-        <Button
-            android:layout_gravity="fill"
-            android:layout_columnSpan="2"
-            android:id="@+id/ac_debugNetwork_setClearAccountDataBtn"
-            android:text="로컬 계정데이터 초기화" />
-        <Button
-            android:layout_gravity="fill"
-            android:layout_columnSpan="2"
-            android:id="@+id/ac_debugNetwork_setSignInDataBtn"
-            android:text="로그인 데이터 설정" />
-        <Button
-            android:layout_gravity="fill"
-            android:layout_columnSpan="2"
-            android:id="@+id/ac_debugNetwork_setSignUpDataBtn"
-            android:text="회원가입 데이터 설정" />
-        <Button
-            android:layout_gravity="fill"
-            android:id="@+id/ac_debugNetwork_signUpBtn"
-            android:text="회원가입" />
-        <Button
-            android:layout_gravity="fill"
-            android:id="@+id/ac_debugNetwork_signInBtn"
-            android:text="로그인" />
-        <Button
-            android:layout_gravity="fill"
-            android:id="@+id/ac_debugNetwork_signOutBtn"
-            android:text="로그아웃" />
-        <Button
-            android:layout_gravity="fill"
-            android:id="@+id/ac_debugNetwork_tokenRefreshBtn"
-            android:text="토큰 갱신" />
+            android:alignmentMode="alignBounds"
+            android:useDefaultMargins="true"
+            android:columnCount="4"
+            >
+            <Button
+                android:layout_gravity="fill"
+                android:id="@+id/ac_debugNetwork_refreshTextBtn"
+                android:layout_columnSpan="4"
+                android:text="텍스트 새로고침" />
+            <Button
+                android:layout_gravity="fill"
+                android:id="@+id/ac_debugNetwork_pingBtn"
+                android:layout_columnSpan="2"
+                android:text="PING" />
+            <Button
+                android:layout_gravity="fill"
+                android:layout_columnSpan="2"
+                android:id="@+id/ac_debugNetwork_setClearAccountDataBtn"
+                android:text="로컬 계정데이터 초기화" />
+            <Button
+                android:layout_gravity="fill"
+                android:layout_columnSpan="2"
+                android:id="@+id/ac_debugNetwork_setSignInDataBtn"
+                android:text="로그인 데이터 설정" />
+            <Button
+                android:layout_gravity="fill"
+                android:layout_columnSpan="2"
+                android:id="@+id/ac_debugNetwork_setSignUpDataBtn"
+                android:text="회원가입 데이터 설정" />
+            <Button
+                android:layout_gravity="fill"
+                android:id="@+id/ac_debugNetwork_signUpBtn"
+                android:text="회원가입" />
+            <Button
+                android:layout_gravity="fill"
+                android:id="@+id/ac_debugNetwork_signInBtn"
+                android:text="로그인" />
+            <Button
+                android:layout_gravity="fill"
+                android:id="@+id/ac_debugNetwork_signOutBtn"
+                android:text="로그아웃" />
+            <Button
+                android:layout_gravity="fill"
+                android:id="@+id/ac_debugNetwork_tokenRefreshBtn"
+                android:text="토큰 갱신" />
 
-        <Button
-            android:layout_gravity="fill"
-            android:id="@+id/ac_debugNetwork_dbSyncBtn"
-            android:layout_columnSpan="4"
-            android:text="DB동기화" />
-        <Button
-            android:layout_gravity="fill"
-            android:id="@+id/ac_debugNetwork_dbGetHashNetworkBtn"
-            android:text="DB해시\norigin\n불러오기" />
-        <Button
-            android:layout_gravity="fill"
-            android:id="@+id/ac_debugNetwork_dbGetHashLocalBtn"
-            android:text="DB해시\nlocal\n재계산" />
-        <Button
-            android:layout_gravity="fill"
-            android:id="@+id/ac_debugNetwork_dbLocalResetBtn"
-            android:text="로컬DB\n초기화" />
-        <Button
-            android:layout_gravity="fill"
-            android:id="@+id/ac_debugNetwork_dbNetworkResetBtn"
-            android:text="서버 DB\n초기화" />
-        <LinearLayout
-            android:layout_gravity="fill"
-            android:layout_columnSpan="4" />
-    </GridLayout>
+            <Button
+                android:layout_gravity="fill"
+                android:id="@+id/ac_debugNetwork_dbSyncBtn"
+                android:layout_columnSpan="4"
+                android:text="DB동기화" />
+            <Button
+                android:layout_gravity="fill"
+                android:id="@+id/ac_debugNetwork_dbGetHashNetworkBtn"
+                android:text="DB해시\norigin\n불러오기" />
+            <Button
+                android:layout_gravity="fill"
+                android:id="@+id/ac_debugNetwork_dbGetHashLocalBtn"
+                android:text="DB해시\nlocal\n재계산" />
+            <Button
+                android:layout_gravity="fill"
+                android:id="@+id/ac_debugNetwork_dbLocalResetBtn"
+                android:text="로컬DB\n초기화" />
+            <Button
+                android:layout_gravity="fill"
+                android:id="@+id/ac_debugNetwork_dbNetworkResetBtn"
+                android:text="서버 DB\n초기화" />
+            <LinearLayout
+                android:layout_gravity="fill"
+                android:layout_columnSpan="4" />
+        </GridLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

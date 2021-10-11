@@ -1,10 +1,13 @@
 package cc.mudev.bca_android.network.BCaAPI;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -12,6 +15,7 @@ import cc.mudev.bca_android.dataStorage.SharedPref;
 import cc.mudev.bca_android.network.APIException;
 import cc.mudev.bca_android.network.APIResponse;
 import cc.mudev.bca_android.network.NetworkSupport;
+import cc.mudev.bca_android.service.FCMHandlerService;
 
 public class AccountAPI {
     public static CompletableFuture<APIResponse> signup(Context context, String id, String pw, String nick, String email) {
@@ -66,11 +70,11 @@ public class AccountAPI {
             return jsonObject;
         }).thenComposeAsync((jsonObject) -> {
             NetworkSupport api = NetworkSupport.getInstance();
-            return api.doPost("account/signup", null, jsonObject, false, false);
+            return api.doPost("account/signup", getClientTokenHeader(context), jsonObject, false, false);
         });
     }
 
-    public static CompletableFuture<APIResponse> signin(Context context, String id, String pw) throws APIException {
+    public static CompletableFuture<APIResponse> signin(Context context, String id, String pw) {
         return CompletableFuture.supplyAsync(() -> {
             if (id == null || id.isEmpty()) {
                 throw new CompletionException(
@@ -106,7 +110,7 @@ public class AccountAPI {
             return jsonObject;
         }).thenComposeAsync((jsonObject) -> {
             NetworkSupport api = NetworkSupport.getInstance();
-            return api.doPost("account/signin", null, jsonObject, false, false).thenApplyAsync((response) -> {
+            return api.doPost("account/signin", getClientTokenHeader(context), jsonObject, false, false).thenApplyAsync((response) -> {
                         SharedPref sharedPref = SharedPref.getInstance(context);
                         try {
                             sharedPref.setPref(SharedPref.SharedPrefKeys.EMAIL, response.body.data.getJSONObject("user").getString("email"));
@@ -145,13 +149,24 @@ public class AccountAPI {
         });
     }
 
-    public static CompletableFuture<Boolean> isRefreshSuccess() {
+    public static CompletableFuture<Boolean> isRefreshSuccess(Context context) {
         NetworkSupport api = NetworkSupport.getInstance();
-        return api.doPost("account/refresh", null, null, true, false)
+        return api.doPost("account/refresh", getClientTokenHeader(context), null, true, false)
                 .thenApplyAsync((response) -> true)
                 .exceptionally((e) -> {
                     api.resetAuthData();
                     return false;
                 });
+    }
+
+    public static Map<String, String> getClientTokenHeader(Context context) {
+        HashMap<String, String> headers = new HashMap<>();
+        try {
+            headers.put("X-Client-Token", FCMHandlerService.getToken(context));
+        } catch (Exception e) {
+            // Just ignore, but this client cannot receive any notifications.
+            e.printStackTrace();
+        }
+        return headers;
     }
 }
