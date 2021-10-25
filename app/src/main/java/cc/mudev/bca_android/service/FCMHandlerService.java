@@ -8,40 +8,26 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
-
-import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONObject;
+
 import cc.mudev.bca_android.R;
 import cc.mudev.bca_android.activity.core.CoreSplashActivity;
 import cc.mudev.bca_android.dataStorage.SharedPref;
+import cc.mudev.bca_android.database.ChatDatabase;
+import cc.mudev.bca_android.database.TB_CHAT_EVENT;
 import cc.mudev.bca_android.network.BCaAPI.AccountAPI;
 
-/**
- * NOTE: There can only be one service in each app that receives FCM messages. If multiple
- * are declared in the Manifest then the first one will be chosen.
- * <p>
- * In order to make this Java sample functional, you must remove the following from the Kotlin messaging
- * service in the AndroidManifest.xml:
- * <p>
- * <intent-filter>
- * <action android:name="com.google.firebase.MESSAGING_EVENT" />
- * </intent-filter>
- */
 public class FCMHandlerService extends FirebaseMessagingService {
 
     private static final String TAG = "FCMHandlerService";
-
-    /**
-     * Called when message is received.
-     *
-     * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
-     */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         // There are two types of messages data messages and notification messages. Data messages
@@ -62,19 +48,34 @@ public class FCMHandlerService extends FirebaseMessagingService {
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
-        // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
 
-            if (/* Check if data needs to be processed by long running job */ false) {
-                // For long-running tasks (10 seconds or more) use WorkManager.
-                scheduleJob();
-            } else {
-                // Handle message within 10 seconds
-                handleNow();
-            }
+            try {
+                JSONObject fcmBodyData = new JSONObject(remoteMessage.getData());
+                ChatDatabase.getInstance(getApplicationContext()).eventDao().insertEvent(new TB_CHAT_EVENT(
+                    fcmBodyData.getInt("uuid"),
+                    0,
+                    fcmBodyData.getString("event_type"),
+                    fcmBodyData.getInt("room_id"),
+                    fcmBodyData.getString("message"),
+                    fcmBodyData.getInt("caused_by_profile_id"),
+                    fcmBodyData.getInt("caused_by_participant_id"),
+                    fcmBodyData.getString("commit_id"),
+                    0, 0, 0
+                ));
 
-            sendNotification("데이터", remoteMessage.getData().toString());
+            } catch (Exception e) { e.printStackTrace(); }
+
+//            if (/* Check if data needs to be processed by long running job */ false) {
+//                // For long-running tasks (10 seconds or more) use WorkManager.
+//                scheduleJob();
+//            } else {
+//                // Handle message within 10 seconds
+//                handleNow();
+//            }
+
+//            sendNotification("데이터", remoteMessage.getData().toString());
         }
 
         // Check if message contains a notification payload.
@@ -99,41 +100,26 @@ public class FCMHandlerService extends FirebaseMessagingService {
     @Override
     public void onNewToken(String token) {
         Log.d(TAG, "Refreshed token: " + token);
-
-        // If you want to send messages to this application instance or
-        // manage this apps subscriptions on the server side, send the
-        // FCM registration token to your app server.
         sendRegistrationToServer(token);
     }
 
-    /**
-     * Schedule async work using WorkManager.
-     */
     private void scheduleJob() {
+        /**
+         * Schedule async work using WorkManager.
+         */
+
 //        OneTimeWorkRequest work = new OneTimeWorkRequest.Builder(MyWorker.class)
 //                .build();
 //        WorkManager.getInstance().beginWith(work).enqueue();
     }
-
-    /**
-     * Handle time allotted to BroadcastReceivers.
-     */
     private void handleNow() {
         Log.d(TAG, "Short lived task is done.");
     }
 
-    /**
-     * Persist token to third-party servers.
-     * <p>
-     * Modify this method to associate the user's FCM registration token with any
-     * server-side account maintained by your application.
-     *
-     * @param token The new token.
-     */
     private void sendRegistrationToServer(String token) {
         try {
             SharedPref.getInstance(getApplicationContext()).setPref(SharedPref.SharedPrefKeys.FCM, token);
-            AccountAPI.isRefreshSuccess(getApplicationContext()).get();
+            AccountAPI.isRefreshSuccess(getApplicationContext());
         } catch (Exception e) {
         }
     }
@@ -173,10 +159,14 @@ public class FCMHandlerService extends FirebaseMessagingService {
 
     public static String getToken(Context context) {
         String result = context.getSharedPreferences("_", MODE_PRIVATE).getString("fb", null);
-        return (result != null) ? result : getTokenDetail(context);
+        if (result == null || "".equals(result))
+            result = getTokenUsingFailsafe(context);
+        SharedPref.getInstance(context).setPref(SharedPref.SharedPrefKeys.FCM, result);
+
+        return result;
     }
 
-    private static String getTokenDetail(Context context) {
+    private static String getTokenUsingFailsafe(Context context) {
         String sharedPrefFCMToken = SharedPref.getInstance(context).getString(SharedPref.SharedPrefKeys.FCM);
         if (sharedPrefFCMToken == null){
             FirebaseMessaging.getInstance().setAutoInitEnabled(true);
