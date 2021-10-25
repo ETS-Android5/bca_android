@@ -12,4 +12,7 @@ public interface ProfileRelationDao {
 
     @Query("SELECT * FROM TB_PROFILE_RELATION WHERE from_profile_id IN (:profile_id)")
     List<TB_PROFILE_RELATION> getAllFollowingProfileRelations(int profile_id);
+
+    @Query("SELECT DISTINCT to_profile_id FROM TB_PROFILE_RELATION WHERE from_profile_id IN (:profile_id)")
+    List<Integer> getAllFollowingProfileId(int profile_id);
 }

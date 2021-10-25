@@ -24,8 +24,8 @@
 
             <com.mikhaellopez.circularimageview.CircularImageView
                 android:id="@+id/li_profileList_profileImg"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_gravity="center"
                 app:civ_border="false"
                 android:scaleType="fitCenter"

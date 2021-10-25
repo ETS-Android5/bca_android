@@ -19,7 +19,7 @@
         android:background="?attr/selectableItemBackground" >
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/na_header_main_profileImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/nav_header_vertical_spacing"
@@ -35,10 +35,11 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/na_header_main_profileImage"
+                app:layout_constraintRight_toLeftOf="@id/na_header_main_profileDropdownBtn"
                 android:orientation="vertical" >
 
                 <TextView
+                    android:id="@+id/na_header_main_profileName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="@dimen/nav_header_vertical_spacing"
@@ -47,7 +48,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
                 <TextView
-                    android:id="@+id/textView"
+                    android:id="@+id/na_header_main_profileDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
@@ -55,10 +56,9 @@
             </LinearLayout>
 
             <ImageView
-                android:id="@+id/na_header_main_profileImage"
+                android:id="@+id/na_header_main_profileDropdownBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintLeft_toRightOf="@id/na_header_main_profileImage"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:backgroundTint="@color/transparent"

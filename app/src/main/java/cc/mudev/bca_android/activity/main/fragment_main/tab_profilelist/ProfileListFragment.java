@@ -1,6 +1,7 @@
 package cc.mudev.bca_android.activity.main.fragment_main.tab_profilelist;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,14 +15,13 @@ import androidx.core.util.Pair;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import cc.mudev.bca_android.R;
 import cc.mudev.bca_android.activity.profile.ProfileDetailActivity;
-import cc.mudev.bca_android.adapter.ProfileFollowingData;
 import cc.mudev.bca_android.adapter.ProfileFollowingAdapter;
 import cc.mudev.bca_android.databinding.FragmentMainTabProfilelistBinding;
 
@@ -31,73 +31,34 @@ public class ProfileListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentMainTabProfilelistBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        FragmentActivity parentFragmentActivity = getParentFragment().getActivity();
+        Context appContext = root.getContext();
 
         Toolbar toolbar = root.findViewById(R.id.fr_profileList_toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DrawerLayout drawer = getParentFragment().getActivity().findViewById(R.id.main_drawerLayout);
-                drawer.openDrawer(GravityCompat.START);
-            }
-        });
-
-        ArrayList<ProfileFollowingData> profileFollowingList = new ArrayList<>();
-        profileFollowingList.add(new ProfileFollowingData("김보라", "개발2팀"));
-        profileFollowingList.add(new ProfileFollowingData("김환경", ""));
-        profileFollowingList.add(new ProfileFollowingData("김희망", "영업팀"));
-        profileFollowingList.add(new ProfileFollowingData("나다영", "R&D 연구팀"));
-        profileFollowingList.add(new ProfileFollowingData("잔디", "환경 아티스트"));
-        profileFollowingList.add(new ProfileFollowingData("박기수", "R&D 연구팀"));
-        profileFollowingList.add(new ProfileFollowingData("임한울", ""));
-        profileFollowingList.add(new ProfileFollowingData("이용", "성진개발 영업팀"));
-        profileFollowingList.add(new ProfileFollowingData("안치홓", "서버 유지보수"));
-        profileFollowingList.add(new ProfileFollowingData("김보라", "개발2팀"));
-        profileFollowingList.add(new ProfileFollowingData("김환경", ""));
-        profileFollowingList.add(new ProfileFollowingData("김희망", "영업팀"));
-        profileFollowingList.add(new ProfileFollowingData("나다영", "R&D 연구팀"));
-        profileFollowingList.add(new ProfileFollowingData("잔디", "환경 아티스트"));
-        profileFollowingList.add(new ProfileFollowingData("박기수", "R&D 연구팀"));
-        profileFollowingList.add(new ProfileFollowingData("임한울", ""));
-        profileFollowingList.add(new ProfileFollowingData("이용", "성진개발 영업팀"));
-        profileFollowingList.add(new ProfileFollowingData("안치홓", "서버 유지보수"));
-        profileFollowingList.add(new ProfileFollowingData("김보라", "개발2팀"));
-        profileFollowingList.add(new ProfileFollowingData("김환경", ""));
-        profileFollowingList.add(new ProfileFollowingData("김희망", "영업팀"));
-        profileFollowingList.add(new ProfileFollowingData("나다영", "R&D 연구팀"));
-        profileFollowingList.add(new ProfileFollowingData("잔디", "환경 아티스트"));
-        profileFollowingList.add(new ProfileFollowingData("박기수", "R&D 연구팀"));
-        profileFollowingList.add(new ProfileFollowingData("임한울", ""));
-        profileFollowingList.add(new ProfileFollowingData("이용", "성진개발 영업팀"));
-        profileFollowingList.add(new ProfileFollowingData("안치홓", "서버 유지보수"));
-        profileFollowingList.add(new ProfileFollowingData("김보라", "개발2팀"));
-        profileFollowingList.add(new ProfileFollowingData("김환경", ""));
-        profileFollowingList.add(new ProfileFollowingData("김희망", "영업팀"));
-        profileFollowingList.add(new ProfileFollowingData("나다영", "R&D 연구팀"));
-        profileFollowingList.add(new ProfileFollowingData("잔디", "환경 아티스트"));
-        profileFollowingList.add(new ProfileFollowingData("박기수", "R&D 연구팀"));
-        profileFollowingList.add(new ProfileFollowingData("임한울", ""));
-        profileFollowingList.add(new ProfileFollowingData("이용", "성진개발 영업팀"));
-        profileFollowingList.add(new ProfileFollowingData("안치홓", "서버 유지보수"));
+        toolbar.setNavigationOnClickListener((view) -> ((DrawerLayout) parentFragmentActivity.findViewById(R.id.main_drawerLayout)).openDrawer(GravityCompat.START));
 
         RecyclerView recyclerView = root.findViewById(R.id.fr_profileList_profileRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(root.getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(appContext));
+        RecyclerView.ItemAnimator animator = recyclerView.getItemAnimator();
+        if (animator instanceof SimpleItemAnimator) {
+            ((SimpleItemAnimator) animator).setSupportsChangeAnimations(false);
+        }
 
-        ProfileFollowingAdapter adapter = new ProfileFollowingAdapter(profileFollowingList);
-        adapter.setOnItemClickListener(new ProfileFollowingAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Intent myProfileIntent = new Intent(view.getContext(), ProfileDetailActivity.class);
+        ProfileFollowingAdapter adapter = new ProfileFollowingAdapter();
+        adapter.setOnItemClickListener((view, position) -> {
+            Intent myProfileIntent = new Intent(appContext, ProfileDetailActivity.class);
 
-                ImageView profileImage = view.findViewById(R.id.li_profileList_profileImg);
-                profileImage.setTransitionName("profileImage");
-                Pair<View, String> pair_thumb = Pair.create(profileImage, profileImage.getTransitionName());
-                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) view.getContext(), pair_thumb);
+            ImageView profileImage = view.findViewById(R.id.li_profileList_profileImg);
+            profileImage.setTransitionName("profileImage");
+            Pair<View, String> pair_thumb = Pair.create(profileImage, profileImage.getTransitionName());
+            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) appContext, pair_thumb);
 
-                view.getContext().startActivity(myProfileIntent, optionsCompat.toBundle());
-                profileImage.setTransitionName(null);
-            }
-        }) ;
+            myProfileIntent.putExtra("profileId", adapter.infoListData.get(position).profileId);
+            appContext.startActivity(myProfileIntent, optionsCompat.toBundle());
+            profileImage.setTransitionName(null);
+        });
         recyclerView.setAdapter(adapter);
+        adapter.refreshData(appContext);
 
         return root;
     }

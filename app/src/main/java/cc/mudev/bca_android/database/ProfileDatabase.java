@@ -6,13 +6,13 @@ import android.content.res.AssetManager;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.room.migration.Migration;
-import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Database(
         entities = {
@@ -23,17 +23,15 @@ import java.io.OutputStream;
         version = 1,
         exportSchema = false)
 public abstract class ProfileDatabase extends RoomDatabase {
+    public static final int NUMBER_OF_THREADS = 4;
+    public static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+
     static final String DATABASE_NAME = "user_db.sqlite";
 
     public abstract ProfileDao profileDao();
     public abstract ProfileRelationDao profileRelationDao();
-    public abstract CardDao cardDao();
-    public abstract CardSubscriptionDao cardSubscriptionDao();
-
-    // Since we don't alter the table, there's nothing else to do here.
-    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
-        @Override public void migrate(SupportSQLiteDatabase a_database) {}
-    };
+    public abstract ProfileCardDao cardDao();
+    public abstract ProfileCardSubscriptionDao cardSubscriptionDao();
 
     private static ProfileDatabase INSTANCE;
 
@@ -61,10 +59,9 @@ public abstract class ProfileDatabase extends RoomDatabase {
                         }
                     }
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            ProfileDatabase.class, DATABASE_NAME)//.allowMainThreadQueries() //TODO 꼭 제거해줄것
+                            ProfileDatabase.class, DATABASE_NAME).allowMainThreadQueries() //TODO 꼭 제거해줄것
                             .createFromFile(dbFile)
                             .fallbackToDestructiveMigration()
-                            .addMigrations(MIGRATION_1_2)
                             .build();
                 }
             }

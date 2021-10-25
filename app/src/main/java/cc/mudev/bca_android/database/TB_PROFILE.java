@@ -12,9 +12,11 @@ public class TB_PROFILE {
 
     @NonNull
     public String name;
+    public String team_name;
     public String description;
     @NonNull
     public String data;
+    public String image_url;
 
     public String email;
     public String phone;
@@ -38,8 +40,10 @@ public class TB_PROFILE {
     public TB_PROFILE(
             int uuid,
             @NonNull String name,
+            String team_name,
             String description,
             @NonNull String data,
+            String image_url,
 
             String email,
             String phone,
@@ -55,8 +59,10 @@ public class TB_PROFILE {
         this.uuid = uuid;
 
         this.name = name;
+        this.team_name = team_name;
         this.description = description;
         this.data = data;
+        this.image_url = image_url;
 
         this.email = email;
         this.phone = phone;

@@ -1,13 +1,10 @@
 package cc.mudev.bca_android.activity.debug;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,17 +49,11 @@ public class DebugNetworkActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_debug_network);
 
-        ProfileDatabase db = ProfileDatabase.getInstance(getApplicationContext());
-        NetworkSupport networkSupport = NetworkSupport.getInstance();
-        networkSupport.initialize(getApplicationContext());
+        ProfileDatabase.getInstance(DebugNetworkActivity.this);
+        NetworkSupport.getInstance(DebugNetworkActivity.this);
 
         Toolbar toolbar = findViewById(R.id.ac_debugNetwork_toolbar);
-        toolbar.setNavigationOnClickListener(new Toolbar.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener((view) -> finish());
 
         ipText = findViewById(R.id.ac_debugNetwork_ipText);
         idText = findViewById(R.id.ac_debugNetwork_idText);
@@ -97,414 +88,208 @@ public class DebugNetworkActivity extends AppCompatActivity {
 
         refreshTextBtn = findViewById(R.id.ac_debugNetwork_refreshTextBtn);
 
-        this.setOnClickListener(getApplicationContext());
-        this.updateText(getApplicationContext());
+        this.setOnClickListener(DebugNetworkActivity.this);
+        this.updateText(DebugNetworkActivity.this);
     }
 
     public void setOnClickListener(Context context) {
-        refreshTextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateText(context);
-            }
-        });
+        refreshTextBtn.setOnClickListener((v) -> updateText(context));
 
-        networkPingBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    NetworkSupport networkSupport = NetworkSupport.getInstance();
-                    networkSupport.ping().thenAcceptAsync(
-                            (response) -> {
-                                Handler handler = new Handler(Looper.getMainLooper());
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(context, "PING 성공", Toast.LENGTH_LONG).show();
-                                        updateText(context);
-                                    }
-                                }, 0);
-                            }
-                    ).exceptionally(e -> {
-                        e.printStackTrace();
-
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
+        networkPingBtn.setOnClickListener((v) -> {
+            try {
+                NetworkSupport networkSupport = NetworkSupport.getInstance(DebugNetworkActivity.this);
+                networkSupport.ping()
+                        .thenAcceptAsync((response) -> (new Handler(Looper.getMainLooper())).postDelayed(() -> {
+                            Toast.makeText(context, "PING 성공", Toast.LENGTH_LONG).show();
+                            updateText(context);
+                        }, 0))
+                        .exceptionally(e -> {
+                            e.printStackTrace();
+                            (new Handler(Looper.getMainLooper())).postDelayed(() -> {
                                 Toast.makeText(context, "PING 실패", Toast.LENGTH_LONG).show();
                                 updateText(context);
-                            }
-                        }, 0);
-                        return null;
-                    }).get();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(context, "PING 실패 - out", Toast.LENGTH_LONG).show();
-                    updateText(context);
-                }
+                            }, 0);
+                            return null;
+                        });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(context, "PING 실패 - out", Toast.LENGTH_LONG).show();
+                updateText(context);
             }
         });
-        signUpBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    NetworkSupport networkSupport = NetworkSupport.getInstance();
-                    AccountAPI.signup(context, id, pw, nick, email).thenAcceptAsync(
-                            (response) -> {
-                                Handler handler = new Handler(Looper.getMainLooper());
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(context, "회원가입 성공", Toast.LENGTH_LONG).show();
-                                        updateText(context);
-                                    }
-                                }, 0);
-                            }
-                    ).exceptionally(e -> {
-                        e.printStackTrace();
-
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
+        signUpBtn.setOnClickListener((v) -> {
+            try {
+                NetworkSupport networkSupport = NetworkSupport.getInstance(DebugNetworkActivity.this);
+                AccountAPI.signup(context, id, pw, nick, email)
+                        .thenAcceptAsync((response) -> (new Handler(Looper.getMainLooper())).postDelayed(() -> {
+                            Toast.makeText(context, "회원가입 성공", Toast.LENGTH_LONG).show();
+                            updateText(context);
+                        }, 0))
+                        .exceptionally(e -> {
+                            e.printStackTrace();
+                            (new Handler(Looper.getMainLooper())).postDelayed(() -> {
                                 Toast.makeText(context, "회원가입 실패", Toast.LENGTH_LONG).show();
                                 updateText(context);
-                            }
-                        }, 0);
-                        return null;
-                    }).get();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(context, "회원가입 실패 - out", Toast.LENGTH_LONG).show();
-                    updateText(context);
-                }
+                            }, 0);
+                            return null;
+                        });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(context, "회원가입 실패 - out", Toast.LENGTH_LONG).show();
+                updateText(context);
+
             }
         });
-        signInBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    NetworkSupport networkSupport = NetworkSupport.getInstance();
-                    AccountAPI.signin(context, id, pw).thenAcceptAsync(
-                            (response) -> {
-                                Handler handler = new Handler(Looper.getMainLooper());
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(context, "로그인 성공", Toast.LENGTH_LONG).show();
-                                        updateText(context);
-                                    }
-                                }, 0);
-                            }
-                    ).exceptionally(e -> {
-                        e.printStackTrace();
-
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
+        signInBtn.setOnClickListener((v) -> {
+            try {
+                NetworkSupport networkSupport = NetworkSupport.getInstance(DebugNetworkActivity.this);
+                AccountAPI.signin(context, id, pw)
+                        .thenAcceptAsync((response) -> (new Handler(Looper.getMainLooper())).postDelayed(() -> {
+                            Toast.makeText(context, "로그인 성공", Toast.LENGTH_LONG).show();
+                            updateText(context);
+                        }, 0))
+                        .exceptionally(e -> {
+                            e.printStackTrace();
+                            (new Handler(Looper.getMainLooper())).postDelayed(() -> {
                                 Toast.makeText(context, "로그인 실패", Toast.LENGTH_LONG).show();
                                 updateText(context);
-                            }
-                        }, 0);
-                        return null;
-                    }).get();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(context, "로그인 실패 - out", Toast.LENGTH_LONG).show();
-                    updateText(context);
-                }
+                            }, 0);
+                            return null;
+                        });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(context, "로그인 실패 - out", Toast.LENGTH_LONG).show();
+                updateText(context);
             }
         });
-        signOutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    NetworkSupport networkSupport = NetworkSupport.getInstance();
-                    AccountAPI.signout(context).thenAcceptAsync(
-                            (response) -> {
-                                Handler handler = new Handler(Looper.getMainLooper());
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(context, "로그아웃 성공", Toast.LENGTH_LONG).show();
-                                        updateText(context);
-                                    }
-                                }, 0);
-                            }
-                    ).exceptionally(e -> {
-                        e.printStackTrace();
-
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
+        signOutBtn.setOnClickListener((v) -> {
+            try {
+                AccountAPI.signout(context)
+                        .thenAcceptAsync((response) -> (new Handler(Looper.getMainLooper())).postDelayed(() -> {
+                            Toast.makeText(context, "로그아웃 성공", Toast.LENGTH_LONG).show();
+                            updateText(context);
+                        }, 0))
+                        .exceptionally(e -> {
+                            e.printStackTrace();
+                            (new Handler(Looper.getMainLooper())).postDelayed(() -> {
                                 Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_LONG).show();
                                 updateText(context);
-                            }
-                        }, 0);
-                        return null;
-                    }).get();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(context, "로그아웃 실패 - out", Toast.LENGTH_LONG).show();
-                    updateText(context);
-                }
+                            }, 0);
+                            return null;
+                        });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(context, "로그아웃 실패 - out", Toast.LENGTH_LONG).show();
+                updateText(context);
             }
         });
-        tokenRefreshBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-//                    NetworkSupport networkSupport = NetworkSupport.getInstance();
-//                    System.out.println(FCMHandlerService.getToken(context));
-//                    System.out.println(FCMHandlerService.getToken(getApplicationContext()));
-                    System.out.println("WHY IS IT NOT WORKING???");
-                    AccountAPI.isRefreshSuccess(context).thenAcceptAsync(
-                            (success) -> {
-                                Handler handler = new Handler(Looper.getMainLooper());
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(context, success ? "Access 토큰 갱신 성공" : "Access 토큰 갱신 실패", Toast.LENGTH_LONG).show();
-                                        updateText(context);
-                                    }
-                                }, 0);
-                            }
-                    ).exceptionally(e -> {
-                        e.printStackTrace();
-
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
+        tokenRefreshBtn.setOnClickListener((v) -> {
+            try {
+                AccountAPI.isRefreshSuccess(context)
+                        .thenAcceptAsync((success) ->
+                                (new Handler(Looper.getMainLooper())).postDelayed(() -> {
+                                    Toast.makeText(context, success ? "Access 토큰 갱신 성공" : "Access 토큰 갱신 실패", Toast.LENGTH_LONG).show();
+                                    updateText(context);
+                                }, 0))
+                        .exceptionally(e -> {
+                            e.printStackTrace();
+                            (new Handler(Looper.getMainLooper())).postDelayed(() -> {
                                 Toast.makeText(context, "Access 토큰 갱신 실패", Toast.LENGTH_LONG).show();
                                 updateText(context);
-                            }
-                        }, 0);
-                        return null;
-                    }).get();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(context, "Access 토큰 갱신 실패 - out", Toast.LENGTH_LONG).show();
-                    updateText(context);
-                }
-            }
-        });
-
-        setClearAccountDataBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                id = pw = nick = email = null;
-
-                updateText(context);
-            }
-        });
-        setSignInDataBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                id = "musoftware";
-                pw = "qwerty!0";
-                nick = null;
-                email = null;
-
-                updateText(context);
-            }
-        });
-        setSignUpDataBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                id = "musoftware";
-                pw = "qwerty!0";
-                nick = "MUsoftware";
-                email = "musoftware@daum.net";
-
-                updateText(context);
-            }
-        });
-
-        dbGetHashNetworkBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ProfileDBSyncAPI.getServerDBETag()
-                        .thenAcceptAsync((hash) -> {
-                            Handler handler = new Handler(Looper.getMainLooper());
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dbOriginHashText.setText("SERVER_DB_HASH : " + hash);
-                                }
                             }, 0);
-                        })
-                        .exceptionally(e -> {
-                            Handler handler = new Handler(Looper.getMainLooper());
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dbOriginHashText.setText("SERVER_DB_HASH : ERROR WHILE GET");
-                                }
-                            }, 0);
-                            e.printStackTrace();
                             return null;
                         });
-            }
-        });
-        dbGetHashLocalBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ProfileDBSyncAPI.getLocalDBETag(context)
-                        .thenAcceptAsync((hash) -> {
-                            Handler handler = new Handler(Looper.getMainLooper());
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dbLocalHashText.setText("LOCAL_DB_HASH : " + hash);
-                                }
-                            }, 0);
-                        })
-                        .exceptionally(e -> {
-                            Handler handler = new Handler(Looper.getMainLooper());
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dbLocalHashText.setText("LOCAL_DB_HASH : ERROR WHILE GET");
-                                }
-                            }, 0);
-                            e.printStackTrace();
-                            return null;
-                        });
-            }
-        });
-        dbSyncBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    NetworkSupport networkSupport = NetworkSupport.getInstance();
-                    ProfileDBSyncAPI.updateDB(context).thenAcceptAsync(
-                            (response) -> {
-                                Handler handler = new Handler(Looper.getMainLooper());
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-
-                                        Handler handler = new Handler(Looper.getMainLooper());
-                                        handler.postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Toast.makeText(context, "DB 갱신 성공", Toast.LENGTH_LONG).show();
-                                                updateText(context);
-                                            }
-                                        }, 0);
-
-                                    }
-                                }, 0);
-                            }
-                    ).exceptionally(e -> {
-                        e.printStackTrace();
-
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(context, "DB 갱신 실패", Toast.LENGTH_LONG).show();
-                                updateText(context);
-                            }
-                        }, 0);
-                        return null;
-                    }).get();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(context, "DB 갱신 실패 - out", Toast.LENGTH_LONG).show();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(context, "Access 토큰 갱신 실패 - out", Toast.LENGTH_LONG).show();
                 updateText(context);
             }
         });
-        dbLocalResetBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Temporary copy db file from asset
-                File dbFile = new File(context.getFilesDir(), "user_db.sqlite");
-                dbFile.delete();
-                AssetManager assetManager = context.getAssets();
-                String[] files = null;
-                try {
-                    InputStream is = assetManager.open("databases/blank.sqlite");
-                    OutputStream out = new FileOutputStream(dbFile);
-                    byte[] buffer = new byte[1024];
-                    int read = is.read(buffer);
 
-                    while (read != -1) {
-                        out.write(buffer, 0, read);
-                        read = is.read(buffer);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        setClearAccountDataBtn.setOnClickListener((v) -> {
+            id = pw = nick = email = null;
+            updateText(context);
+        });
+        setSignInDataBtn.setOnClickListener((v) -> {
+            id = "musoftware";
+            pw = "qwerty!0";
+            nick = null;
+            email = null;
 
-                ProfileDBSyncAPI.getLocalDBETag(context)
-                        .thenAcceptAsync((hash) -> {
-                            Handler handler = new Handler(Looper.getMainLooper());
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dbLocalHashText.setText("LOCAL_DB_HASH : " + hash);
-                                }
-                            }, 0);
-                        })
+            updateText(context);
+        });
+        setSignUpDataBtn.setOnClickListener((v) -> {
+            id = "musoftware";
+            pw = "qwerty!0";
+            nick = "MUsoftware";
+            email = "musoftware@daum.net";
+
+            updateText(context);
+        });
+
+        dbGetHashNetworkBtn.setOnClickListener((v) -> updateDBText(context));
+        dbGetHashLocalBtn.setOnClickListener((v) -> updateDBText(context));
+        dbSyncBtn.setOnClickListener((v) -> {
+            try {
+                ProfileDBSyncAPI.updateDB(context)
+                        .thenAcceptAsync((response) -> (new Handler(Looper.getMainLooper())).postDelayed(() -> {
+                            Toast.makeText(context, "DB 갱신 성공", Toast.LENGTH_LONG).show();
+                            updateDBText(context);
+                        }, 0))
                         .exceptionally(e -> {
-                            Handler handler = new Handler(Looper.getMainLooper());
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dbLocalHashText.setText("LOCAL_DB_HASH : ERROR WHILE GET");
-                                }
-                            }, 0);
                             e.printStackTrace();
+                            (new Handler(Looper.getMainLooper())).postDelayed(() -> Toast.makeText(context, "DB 갱신 실패", Toast.LENGTH_LONG).show(), 0);
                             return null;
                         });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(context, "DB 갱신 실패 - out", Toast.LENGTH_LONG).show();
             }
         });
-        dbNetworkResetBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    NetworkSupport networkSupport = NetworkSupport.getInstance();
-                    ProfileDBSyncAPI.recreateDBOnServer().thenAcceptAsync(
-                            (response) -> {
-                                Handler handler = new Handler(Looper.getMainLooper());
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(context, "서버 DB 초기화 성공", Toast.LENGTH_LONG).show();
-                                        updateText(context);
-                                    }
-                                }, 0);
-                            }
-                    ).exceptionally(e -> {
-                        e.printStackTrace();
+        dbLocalResetBtn.setOnClickListener((v) -> {
+            // Temporary copy db file from asset
+            File dbFile = new File(context.getFilesDir(), "user_db.sqlite");
+            dbFile.delete();
+            AssetManager assetManager = context.getAssets();
+            String[] files = null;
+            try {
+                InputStream is = assetManager.open("databases/blank.sqlite");
+                OutputStream out = new FileOutputStream(dbFile);
+                byte[] buffer = new byte[1024];
+                int read = is.read(buffer);
 
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(context, "서버 DB 초기화 실패", Toast.LENGTH_LONG).show();
-                                updateText(context);
-                            }
-                        }, 0);
-                        return null;
-                    }).get();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(context, "서버 DB 초기화 실패 - out", Toast.LENGTH_LONG).show();
+                while (read != -1) {
+                    out.write(buffer, 0, read);
+                    read = is.read(buffer);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            updateDBText(context);
+        });
+        dbNetworkResetBtn.setOnClickListener((v) -> {
+            try {
+                ProfileDBSyncAPI.recreateDBOnServer(DebugNetworkActivity.this)
+                        .thenAcceptAsync((response) -> (new Handler(Looper.getMainLooper())).postDelayed(() -> {
+                            Toast.makeText(context, "서버 DB 초기화 성공", Toast.LENGTH_LONG).show();
+                            updateDBText(context);
+                        }, 0))
+                        .exceptionally(e -> {
+                            e.printStackTrace();
+                            (new Handler(Looper.getMainLooper())).postDelayed(() -> Toast.makeText(context, "서버 DB 초기화 실패", Toast.LENGTH_LONG).show(), 0);
+                            return null;
+                        });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(context, "서버 DB 초기화 실패 - out", Toast.LENGTH_LONG).show();
             }
         });
     }
 
     public void updateText(Context context) {
         SharedPref sharedPref = SharedPref.getInstance(context);
-        NetworkSupport networkSupport = NetworkSupport.getInstance();
+        NetworkSupport networkSupport = NetworkSupport.getInstance(DebugNetworkActivity.this);
 
         String sharedPrefID = sharedPref.getString(SharedPref.SharedPrefKeys.ID);
         String sharedPrefPW = sharedPref.getString(SharedPref.SharedPrefKeys.PASSWORD);
@@ -525,55 +310,29 @@ public class DebugNetworkActivity extends AppCompatActivity {
         accessTokenText.setText("ACCESS_TOKEN : " + (accessToken != null ? accessToken : ""));
         csrfTokenText.setText("CSRF_TOKEN : " + (csrfToken != null ? csrfToken : ""));
 
-//        fcmTokenText.setText("FCM_TOKEN : " + FCMHandlerService.getToken(context));
-        ;
-        fcmTokenText.setText("FCM_TOKEN : " + SharedPref.getInstance(context).getString(SharedPref.SharedPrefKeys.FCM));
+        fcmTokenText.setText("FCM_TOKEN : " + FCMHandlerService.getToken(context));
+    }
 
+    public void updateDBText(Context context) {
         try {
-            ProfileDBSyncAPI.getServerDBETag()
-                    .thenAcceptAsync((hash) -> {
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                dbOriginHashText.setText("SERVER_DB_HASH : " + hash);
-                            }
-                        }, 0);
-                    })
+            ProfileDBSyncAPI.getServerDBETag(DebugNetworkActivity.this)
+                    .thenAcceptAsync((hash) -> (new Handler(Looper.getMainLooper())).postDelayed(() -> dbOriginHashText.setText("SERVER_DB_HASH : " + hash), 0))
                     .exceptionally(e -> {
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                dbOriginHashText.setText("SERVER_DB_HASH : ERROR WHILE GET");
-                            }
-                        }, 0);
                         e.printStackTrace();
+                        (new Handler(Looper.getMainLooper())).postDelayed(() -> dbOriginHashText.setText("SERVER_DB_HASH : ERROR WHILE GET"), 0);
                         return null;
                     });
-        } catch (Exception e) {}
-        ProfileDBSyncAPI.getLocalDBETag(context)
-                .thenAcceptAsync((hash) -> {
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            dbLocalHashText.setText("LOCAL_DB_HASH : " + hash);
-                        }
-                    }, 0);
-                })
-                .exceptionally(e -> {
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            dbLocalHashText.setText("LOCAL_DB_HASH : ERROR WHILE GET");
-                        }
-                    }, 0);
-
-                    e.printStackTrace();
-                    return null;
-                });
+            ProfileDBSyncAPI.getLocalDBETag(context)
+                    .thenAcceptAsync((hash) -> (new Handler(Looper.getMainLooper())).postDelayed(() -> dbLocalHashText.setText("LOCAL_DB_HASH : " + hash), 0))
+                    .exceptionally(e -> {
+                        e.printStackTrace();
+                        (new Handler(Looper.getMainLooper())).postDelayed(() -> dbLocalHashText.setText("LOCAL_DB_HASH : ERROR WHILE GET"), 0);
+                        return null;
+                    });
+            updateText(context);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static String getLocalIpAddress() {
@@ -587,8 +346,8 @@ public class DebugNetworkActivity extends AppCompatActivity {
                     }
                 }
             }
-        } catch (SocketException ex) {
-            ex.printStackTrace();
+        } catch (SocketException e) {
+            e.printStackTrace();
         }
         return "OFFLINE";
     }

@@ -29,7 +29,9 @@ public class ProfileDetailInfoAdapter extends RecyclerView.Adapter<ProfileDetail
         }
     }
 
-    public ProfileDetailInfoAdapter(ArrayList<ProfileDetailInfoData> list) { this.infoListData = list; }
+    public ProfileDetailInfoAdapter(ArrayList<ProfileDetailInfoData> list) {
+        this.infoListData = list;
+    }
 
     @Override
     public ProfileDetailInfoViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {

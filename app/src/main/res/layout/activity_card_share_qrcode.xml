@@ -12,7 +12,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:navigationIcon="?attr/homeAsUpIndicator"
         app:navigationIcon="?attr/homeAsUpIndicator"
-        app:title="명함 공유하기" />
+        app:title="내 명함 공유" />
 
     <View
         android:id="@+id/ac_cardShareQRcode_divider1"

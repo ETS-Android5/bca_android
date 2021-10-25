@@ -19,6 +19,6 @@ public interface ProfileDao {
     @Query("SELECT * FROM TB_PROFILE WHERE uuid IN (:profile_id)")
     List<TB_PROFILE> loadByProfileID(List<Integer> profile_id); //리스트 파라미터면 리스트로 반환
 
-    @Query("SELECT * FROM TB_PROFILE WHERE uuid IN (:profile_id)")
+    @Query("SELECT * FROM TB_PROFILE WHERE uuid = (:profile_id)")
     TB_PROFILE loadByProfileID(Integer profile_id); //단일 파라미터면 단일로 반환
 }

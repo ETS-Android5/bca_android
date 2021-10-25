@@ -54,6 +54,7 @@
                     />
 
                 <com.mikhaellopez.circularimageview.CircularImageView
+                    android:id="@+id/ac_profileDetail_profileImageView"
                     android:layout_width="72dp"
                     android:layout_height="72dp"
                     app:layout_constraintLeft_toLeftOf="@id/ac_profileDetail_teamNameText"
@@ -91,7 +92,8 @@
                     app:layout_constraintBottom_toTopOf="@id/ac_profileDetail_divider2"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    android:text="@string/profile_detail_dummy" />
+                    android:visibility="invisible"
+                    />
 
                 <View
                     style="@style/Divider"

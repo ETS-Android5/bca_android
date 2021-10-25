@@ -10,6 +10,7 @@ public class SharedPref {
         PASSWORD("PASSWORD"),
         EMAIL("EMAIL"),
         NICKNAME("NICKNAME"),
+        ROLE_STRING("ROLE_STRING"),
         REFRESH_TOKEN("REFRESH_TOKEN"),
 
         // FCM related thing

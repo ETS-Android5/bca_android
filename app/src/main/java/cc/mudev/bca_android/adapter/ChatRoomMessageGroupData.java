@@ -17,7 +17,8 @@ public class ChatRoomMessageGroupData {
     public String infoMessage;
 
     // For the normal message bubble
-    boolean isMyMessage;
+    public boolean isMyMessage;
+    public int profileId;
     public String profileName;
     public ArrayList<ChatRoomMessageData> chatRoomChildData;
     public ChatRoomMessageAdapter chatRoomMessageAdapter;
@@ -25,6 +26,7 @@ public class ChatRoomMessageGroupData {
     public ChatRoomMessageGroupData(
             Context context,
             boolean isMyMessage,
+            int profileId,
             String profileName,
             ArrayList<ChatRoomMessageData> chatRoomChildData) {
         this.context = context;
@@ -36,6 +38,7 @@ public class ChatRoomMessageGroupData {
 
         // Set normal message bubble
         this.isMyMessage = isMyMessage;
+        this.profileId = profileId;
         this.profileName = profileName;
         this.chatRoomChildData = (chatRoomChildData != null) ? chatRoomChildData : new ArrayList<>();
         this.chatRoomMessageAdapter = new ChatRoomMessageAdapter(this.chatRoomChildData);
@@ -48,6 +51,7 @@ public class ChatRoomMessageGroupData {
         // Set info message bubble or normal message bubble related variables as null
         this.infoMessage = null;
         this.isMyMessage = false;
+        this.profileId = -1;
         this.profileName = null;
         this.chatRoomChildData = null;
         this.chatRoomMessageAdapter = null;
@@ -71,4 +75,10 @@ public class ChatRoomMessageGroupData {
         this.infoMessage = infoMessage;
     }
 
+    public ChatRoomMessageData getLastMessage() {
+        if (this.chatRoomChildData != null && this.chatRoomChildData.size() > 0)
+            return this.chatRoomChildData.get(this.chatRoomChildData.size() - 1);
+
+        return null;
+    }
 }

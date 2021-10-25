@@ -15,9 +15,9 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import cc.mudev.bca_android.R;
-import cc.mudev.bca_android.activity.main.fragment_main.tab_profilelist.ProfileListFragment;
-import cc.mudev.bca_android.activity.main.fragment_main.tab_chatlist.ChatListFragment;
 import cc.mudev.bca_android.activity.main.fragment_main.tab_cardlist.CardListFragment;
+import cc.mudev.bca_android.activity.main.fragment_main.tab_chatlist.ChatListFragment;
+import cc.mudev.bca_android.activity.main.fragment_main.tab_profilelist.ProfileListFragment;
 import cc.mudev.bca_android.databinding.FragmentMainBinding;
 
 public class MainFragment extends Fragment {

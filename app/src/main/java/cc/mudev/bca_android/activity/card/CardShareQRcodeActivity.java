@@ -1,6 +1,5 @@
 package cc.mudev.bca_android.activity.card;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -8,7 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.zxing.BarcodeFormat;
@@ -19,9 +17,11 @@ import com.google.zxing.common.BitMatrix;
 import cc.mudev.bca_android.R;
 import cc.mudev.bca_android.activity.main.MainActivity;
 import cc.mudev.bca_android.network.NetworkSupport;
+import cc.mudev.bca_android.util.AlertDialogGenerator;
 import cc.mudev.bca_android.util.SwipeDismissBaseActivity;
 
 public class CardShareQRcodeActivity extends SwipeDismissBaseActivity {
+    private static final String ERROR_DIALOG_TITLE = "내 명함의 QR 코드를 표시할 수 없어요";
     public final static int WHITE = 0xFFFFFFFF;
     public final static int BLACK = 0xFF000000;
     public final static int WIDTH = 400;
@@ -35,17 +35,11 @@ public class CardShareQRcodeActivity extends SwipeDismissBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_share_qrcode);
 
-        Toolbar toolbar = findViewById(R.id.ac_cardShareQRcode_toolbar);
-        toolbar.setTitle("내 명함 공유하기");
-        toolbar.setNavigationOnClickListener(new Toolbar.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-
         shareWithAnotherWayBtn = findViewById(R.id.ac_cardShareQRcode_shareWithBtn);
         cardShareQRcode = findViewById(R.id.ac_cardShareQRcode_qrImgView);
+
+        Toolbar toolbar = findViewById(R.id.ac_cardShareQRcode_toolbar);
+        toolbar.setNavigationOnClickListener((view) -> finish());
 
         // This activity will be used multiple times
         Intent profileListActivity = new Intent(CardShareQRcodeActivity.this, MainActivity.class);
@@ -54,21 +48,17 @@ public class CardShareQRcodeActivity extends SwipeDismissBaseActivity {
         Intent activityStartIntent = getIntent();
         int cardId = activityStartIntent.getIntExtra("cardId", -1);
         if (cardId < 0) {
-            AlertDialog.Builder errorDialogBuilder = new AlertDialog.Builder(this)
-                    .setTitle("내 명함의 QR코드를 표시할 수 없어요.")
-                    .setMessage("내 명함의 정보를 가져오는 도중 문제가 발생했습니다.")
-                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int i) {
-                            startActivity(profileListActivity);
-                            finish();
-                        }
+            AlertDialogGenerator.gen(
+                    CardShareQRcodeActivity.this, ERROR_DIALOG_TITLE,
+                    "내 명함의 정보를 가져오는 도중 문제가 발생했습니다.",
+                    false,
+                    "확인", (d, i) -> {
+                        startActivity(profileListActivity);
+                        finish();
                     });
-            errorDialogBuilder.create().show();
             return;
         }
 
-        NetworkSupport api = NetworkSupport.getInstance();
         // We don't need to initialize api as we just get baseUrl on object
         String cardSubscriptionUrl = String.format(NetworkSupport.baseUrl + "cards/%d/subscribe", cardId);
 
@@ -77,17 +67,14 @@ public class CardShareQRcodeActivity extends SwipeDismissBaseActivity {
             cardShareQRcode.setImageBitmap(qrCodeBitmap);
         } catch (WriterException e) {
             e.printStackTrace();
-            AlertDialog.Builder errorDialogBuilder = new AlertDialog.Builder(this)
-                    .setTitle("내 명함의 QR코드를 표시할 수 없어요.")
-                    .setMessage("내 명함 고유의 QR코드를 만드는데 오류가 발생했어요.")
-                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int i) {
-                            startActivity(profileListActivity);
-                            finish();
-                        }
+            AlertDialogGenerator.gen(
+                    CardShareQRcodeActivity.this, ERROR_DIALOG_TITLE,
+                    "내 명함 고유의 QR코드를 만드는데 오류가 발생했어요.",
+                    false,
+                    "확인", (d, i) -> {
+                        startActivity(profileListActivity);
+                        finish();
                     });
-            errorDialogBuilder.create().show();
             return;
         }
 
@@ -105,12 +92,12 @@ public class CardShareQRcodeActivity extends SwipeDismissBaseActivity {
             }
         });
     }
+
     Bitmap encodeAsBitmap(String str) throws WriterException {
         BitMatrix result;
         try {
             result = new MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, WIDTH, HEIGHT, null);
-        } catch (IllegalArgumentException iae) {
-            // Unsupported format
+        } catch (IllegalArgumentException iae) { // Unsupported format
             return null;
         }
 
