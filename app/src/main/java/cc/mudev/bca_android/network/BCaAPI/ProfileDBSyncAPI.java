@@ -1,6 +1,7 @@
 package cc.mudev.bca_android.network.BCaAPI;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.util.Base64;
 
 import java.io.File;
@@ -8,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,15 +26,8 @@ import cc.mudev.bca_android.network.APIResponse;
 import cc.mudev.bca_android.network.NetworkSupport;
 
 public class ProfileDBSyncAPI {
-    public static CompletableFuture<String> getServerDBETag() {
-        NetworkSupport api = NetworkSupport.getInstance();
-
-        /*
-            throw new APIException(
-                    "Unknown exception raised",
-                    "서버에서 명함 목록 정보를 가져오는 중 문제가 발생했습니다.",
-                    -1, null);
-         */
+    public static CompletableFuture<String> getServerDBETag(Context context) {
+        NetworkSupport api = NetworkSupport.getInstance(context);
 
         return api.doHead("sync", null, false, true).thenApplyAsync(
                 (APIResponse resp) -> {
@@ -46,6 +42,24 @@ public class ProfileDBSyncAPI {
             try {
                 // TODO: Change this to real DB file
                 File dbFile = new File(context.getFilesDir(), "user_db.sqlite");
+                if (!dbFile.exists()) {
+                    // Temporary copy db file from asset
+                    AssetManager assetManager = context.getAssets();
+                    String[] files = null;
+                    try {
+                        InputStream is = assetManager.open("databases/blank.sqlite");
+                        OutputStream out = new FileOutputStream(dbFile);
+                        byte[] buffer = new byte[1024];
+                        int read = is.read(buffer);
+
+                        while (read != -1) {
+                            out.write(buffer, 0, read);
+                            read = is.read(buffer);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 FileInputStream dbFileFis = new FileInputStream(dbFile);
                 dbFileContent = new byte[(int) dbFileFis.available()];
                 dbFileFis.read(dbFileContent);
@@ -90,7 +104,7 @@ public class ProfileDBSyncAPI {
     }
 
     public static CompletableFuture<Boolean> isDBLatest(Context context) {
-        return getServerDBETag().thenCombineAsync(
+        return getServerDBETag(context).thenCombineAsync(
                 getLocalDBETag(context),
                 (serverEtag, localEtag) -> {
                     try {
@@ -101,10 +115,10 @@ public class ProfileDBSyncAPI {
                 }).exceptionally(e -> false);
     }
 
-    public static CompletableFuture<Void> updateDB(Context context) throws APIException {
-        return getServerDBETag().thenCombineAsync(getLocalDBETag(context), (serverEtag, localEtag) -> {
+    public static CompletableFuture<Void> updateDB(Context context) {
+        return getServerDBETag(context).thenCombineAsync(getLocalDBETag(context), (serverEtag, localEtag) -> {
             if (!serverEtag.equals(localEtag)) { // Do this only when db file is outdated
-                NetworkSupport api = NetworkSupport.getInstance();
+                NetworkSupport api = NetworkSupport.getInstance(context);
                 Map<String, String> headers = new HashMap<String, String>();
 
                 try {
@@ -149,8 +163,8 @@ public class ProfileDBSyncAPI {
         });
     }
 
-    public static CompletableFuture<APIResponse> recreateDBOnServer() throws APIException {
-        NetworkSupport api = NetworkSupport.getInstance();
+    public static CompletableFuture<APIResponse> recreateDBOnServer(Context context) throws APIException {
+        NetworkSupport api = NetworkSupport.getInstance(context);
         return api.doDelete("sync", null, null, false, true);
     }
 }

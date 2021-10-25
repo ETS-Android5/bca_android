@@ -6,7 +6,7 @@ import androidx.room.Query;
 import java.util.List;
 
 @Dao
-public interface CardSubscriptionDao {
+public interface ProfileCardSubscriptionDao {
     @Query("SELECT * FROM TB_CARD_SUBSCRIPTION")
     List<TB_CARD_SUBSCRIPTION> getAll();
 

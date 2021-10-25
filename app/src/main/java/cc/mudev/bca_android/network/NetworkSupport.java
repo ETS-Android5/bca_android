@@ -3,6 +3,7 @@ package cc.mudev.bca_android.network;
 import static android.content.ContentValues.TAG;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
@@ -10,6 +11,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,6 +23,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,22 +33,26 @@ import java.util.concurrent.CompletionException;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import cc.mudev.bca_android.activity.profile.ProfileDetailActivity;
 import cc.mudev.bca_android.dataStorage.SharedPref;
 
 public class NetworkSupport {
-    public boolean isOffline = false;
+    public Context context = null;
 
-    public static String baseUrl = "https://bca.mudev.cc/api/dev/";
+    public boolean isOffline = true;
+
+    public static String baseDomain = "https://bca.mudev.cc";
+    public static String baseUrl = baseDomain + "/api/dev/";
 
     // TODO: below values must be a private!!!
     public String refreshToken;
     public String accessToken;
     public String csrfToken;
 
-    private boolean isInitialized = false;
-    private boolean isRunning = false;
+    public boolean isInitialized = false;
 
     public APIRole roleList;
+    public APIRole.ProfileRole currentProfile;
 
     private NetworkSupport() {
         this.csrfToken = UUID.randomUUID().toString();
@@ -53,36 +62,55 @@ public class NetworkSupport {
         private static final NetworkSupport INSTANCE = new NetworkSupport();
     }
 
-    public static NetworkSupport getInstance() {
+    public static NetworkSupport getInstance(Context context) {
+        if (LazyHolder.INSTANCE.context == null && context == null)
+            return null;
+
+        if (context != null)
+            LazyHolder.INSTANCE.context = context;
+
+        if (!LazyHolder.INSTANCE.isInitialized) {
+            LazyHolder.INSTANCE.isInitialized = true;
+            // Try to get refreshToken from shared preferences
+            if (LazyHolder.INSTANCE.refreshToken == null) {
+                SharedPref sharedPref = SharedPref.getInstance(context);
+                LazyHolder.INSTANCE.refreshToken = sharedPref.getString(SharedPref.SharedPrefKeys.REFRESH_TOKEN);
+            }
+        }
         return LazyHolder.INSTANCE;
     }
 
-    public void initialize(Context context) {
-        if (this.isInitialized) {
-            return;
-        }
-
-        this.isInitialized = true;
-        // Try to get refreshToken from shared preferences
-        if (this.refreshToken == null) {
-            SharedPref sharedPref = SharedPref.getInstance(context);
-            this.refreshToken = sharedPref.getString(SharedPref.SharedPrefKeys.REFRESH_TOKEN);
+    public int getCurrentProfileId() {
+        try {
+            return LazyHolder.INSTANCE.currentProfile.id;
+        } catch (NullPointerException e) {
+            return -1;
         }
     }
 
-    public boolean isInternetAvailable() {
-        this.isOffline = false;
+    public List<Integer> getAllProfileIds() {
+        List<Integer> resultIds = new ArrayList<>();
+        for (APIRole.APIRoleBase myProfileId : this.roleList.role) {
+            if (myProfileId.getClass() == APIRole.ProfileRole.class) {
+                resultIds.add(myProfileId.id);
+            }
+        }
+        return resultIds;
+    }
+
+    public boolean isInternetOffline() {
+        this.isOffline = true;
         try {
-            HttpURLConnection urlc = (HttpURLConnection)
+            HttpURLConnection httpURLConnection = (HttpURLConnection)
                     (new URL("https://clients3.google.com/generate_204")
                             .openConnection());
-            urlc.setRequestProperty("User-Agent", "Android");
-            urlc.setRequestProperty("Connection", "close");
-            urlc.setConnectTimeout(1500);
-            urlc.connect();
-            this.isOffline = (urlc.getResponseCode() == 204 && urlc.getContentLength() == 0);
+            httpURLConnection.setRequestProperty("User-Agent", "Android");
+            httpURLConnection.setRequestProperty("Connection", "close");
+            httpURLConnection.setConnectTimeout(1500);
+            httpURLConnection.connect();
+            this.isOffline = !(httpURLConnection.getResponseCode() == 204 && httpURLConnection.getContentLength() == 0);
             return this.isOffline;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, "Error checking internet connection", e);
         }
@@ -90,12 +118,77 @@ public class NetworkSupport {
     }
 
     public void resetAuthData() {
+
         this.refreshToken = null;
         this.accessToken = null;
         this.csrfToken = UUID.randomUUID().toString();
         this.roleList = null;
 
-        SharedPref.minstance.removePref(SharedPref.SharedPrefKeys.REFRESH_TOKEN);
+        SharedPref sharedPref = SharedPref.getInstance(this.context);
+        sharedPref.removePref(SharedPref.SharedPrefKeys.ID);
+        sharedPref.removePref(SharedPref.SharedPrefKeys.PASSWORD);
+        sharedPref.removePref(SharedPref.SharedPrefKeys.NICKNAME);
+        sharedPref.removePref(SharedPref.SharedPrefKeys.EMAIL);
+        sharedPref.removePref(SharedPref.SharedPrefKeys.ROLE_STRING);
+        sharedPref.removePref(SharedPref.SharedPrefKeys.REFRESH_TOKEN);
+    }
+
+    public void setRoleFromString(String roleString) {
+        try {
+            if (!TextUtils.isEmpty(roleString)) {
+                SharedPref.minstance.setPref(SharedPref.SharedPrefKeys.ROLE_STRING, roleString);
+
+                ArrayList<String> roleStringList = new ArrayList<>();
+                JSONArray jArray = new JSONArray(roleString);
+                for (int i = 0; i < jArray.length(); i++)
+                    roleStringList.add(jArray.getString(i));
+
+                this.roleList = new APIRole(roleStringList);
+                if (this.currentProfile == null) {
+                    for (APIRole.APIRoleBase role : this.roleList.role) {
+                        if (role.getClass() == APIRole.ProfileRole.class) {
+                            this.currentProfile = (APIRole.ProfileRole) role;
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setRoleFromSharedPref() {
+        String roleString = SharedPref.getInstance(this.context).getString(SharedPref.SharedPrefKeys.ROLE_STRING);
+        setRoleFromString(roleString);
+    }
+
+    public HashMap<String, String> getAuthenticatedHeader(boolean doRefreshTokenAuth, boolean doAccessTokenAuth) throws APIException {
+        HashMap<String, String> resultHeader = new HashMap<>();
+
+        // Check access token and refresh token when those are used
+        if (doAccessTokenAuth) {
+            if (accessToken == null || accessToken.isEmpty()) {
+                if (refreshToken == null || refreshToken.isEmpty()) {
+                    throw new APIException(
+                            "Access token is null or empty, but tried accessTokenAuth",
+                            "로그인 정보가 없습니다, 다시 로그인을 해 주세요.",
+                            401, null);
+                }
+            }
+            resultHeader.put("Authorization", "Bearer " + this.accessToken);
+        }
+        if (doRefreshTokenAuth) {
+            if (refreshToken == null || refreshToken.isEmpty()) {
+                this.resetAuthData();
+                throw new APIException(
+                        "Refresh token is null or empty, but tried refreshTokenAuth",
+                        "로그인 정보가 없습니다, 다시 로그인을 해 주세요.",
+                        401, null);
+            }
+            resultHeader.put("Cookie", "refresh_token=" + this.refreshToken);
+        }
+        return resultHeader;
     }
 
     private APIResponse sendRequest(
@@ -103,27 +196,22 @@ public class NetworkSupport {
             Map<String, String> headers, JSONObject data,
             boolean doRefreshTokenAuth, boolean doAccessTokenAuth, boolean isRetry)
             throws APIException {
-        if (!isRetry) {
-            isRunning = true;
-        }
 
         String networkErrorMsg = "서버와 통신 중 예상하지 못한 문제가 발생했습니다!\n";
         String networkErrorRetryAfter10MinMsg = networkErrorMsg + "10분 후에 다시 시도해주세요.";
 
         try {
-            if (!this.isInitialized) {
+            if (!this.isInitialized)
                 throw new APIException(
                         "NetworkSupport not initialized",
                         networkErrorMsg + "(앱 초기화 중 문제가 발생했습니다.)",
                         -1, null);
-            }
 
-            if (!this.isInternetAvailable()) {
+            if (this.isInternetOffline())
                 throw new APIException(
                         "no internet connection",
                         networkErrorMsg + "(인터넷 연결을 확인해주세요.)",
                         -1, null);
-            }
 
             URL url = new URL(baseUrl + route);
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
@@ -164,7 +252,7 @@ public class NetworkSupport {
                     }
                     // Refresh access token and try again
                     this.sendRequest("post", "account/refresh", null, null, true, false, true);
-                    return this.sendRequest(method, route, headers, data, doRefreshTokenAuth, doAccessTokenAuth, true);
+                    return this.sendRequest(method, route, headers, data, doRefreshTokenAuth, true, true);
                 }
                 conn.setRequestProperty("Authorization", "Bearer " + this.accessToken);
             }
@@ -193,11 +281,10 @@ public class NetworkSupport {
 
             // Do request and get status code
             int status = conn.getResponseCode();
-            String responseString = conn.getResponseMessage();
             Map<String, List<String>> responseHeaders = conn.getHeaderFields();
 
             // Try to parse response from server
-            JSONObject responseBodyJson = null;
+            JSONObject responseBodyJson;
             APIResponseBody responseBody = null;
             InputStream tmpResponse = (200 <= status && status <= 399) ? conn.getInputStream() : conn.getErrorStream();
 
@@ -226,10 +313,6 @@ public class NetworkSupport {
                 }
             }
 
-            if (!isRetry) {
-                isRunning = false;
-            }
-
             if (method.matches("head|trace")) {
                 return new APIResponse(status, responseHeaders, responseBody);
             } else if (responseBody == null) {
@@ -248,16 +331,7 @@ public class NetworkSupport {
                     String tokenDataString = new String(Base64.decode(tokenDataBase64, Base64.DEFAULT), StandardCharsets.UTF_8);
                     JSONObject tokenData = new JSONObject(tokenDataString);
                     String roleString = (tokenData.has("role")) ? tokenData.getString("role") : null;
-                    if ("".equals(roleString)) {
-                        ArrayList<String> roleStringList = new ArrayList<String>();
-                        JSONArray jArray = new JSONArray(roleString);
-                        if (jArray != null) {
-                            for (int i = 0; i < jArray.length(); i++) {
-                                roleStringList.add(jArray.getString(i));
-                            }
-                        }
-                        this.roleList = new APIRole(roleStringList);
-                    }
+                    setRoleFromString(roleString);
 
                     if (route.matches("account/signin|account/signup")) {
                         // Set refresh token, too
@@ -374,13 +448,13 @@ public class NetworkSupport {
                     "SocketTimeoutException",
                     networkErrorRetryAfter10MinMsg + "\n(서버와 연결하는데 너무 오래 걸립니다.)",
                     -1, null);
-        } catch(UnknownHostException e) {
+        } catch (UnknownHostException e) {
             e.printStackTrace();
             throw new APIException(
                     "UnknownHostException raised",
                     networkErrorMsg + "인터넷 연결을 확인해주시고,\n잠시 후 다시 시도해주세요.",
                     -1, null);
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             throw new APIException(
                     "IOException raised",
@@ -457,7 +531,7 @@ public class NetworkSupport {
 
     public CompletableFuture<APIResponse> doDelete(
             String route, Map<String, String> headers, JSONObject data,
-            boolean doRefreshToken, boolean doAccessToken) throws APIException {
+            boolean doRefreshToken, boolean doAccessToken) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return this.sendRequest("delete", route, headers, data, doRefreshToken, doAccessToken, false);
@@ -469,5 +543,150 @@ public class NetworkSupport {
 
     public CompletableFuture<APIResponse> ping() {
         return this.doGet("ping", null, false, false);
+    }
+
+    public CompletableFuture<APIResponse> uploadFile(String filepath, String filefield, String fileMimeType, Map<String, String> params) {
+        return CompletableFuture.supplyAsync(() -> {
+            String networkErrorMsg = "서버와 통신 중 예상하지 못한 문제가 발생했습니다!\n";
+            String networkErrorRetryAfter10MinMsg = networkErrorMsg + "10분 후에 다시 시도해주세요.";
+
+            DataOutputStream outputStream;
+
+            String twoHyphens = "--";
+            String boundary = "*****" + System.currentTimeMillis() + "*****";
+            String lineEnd = "\r\n";
+
+            int bytesRead, bytesAvailable, bufferSize;
+            byte[] buffer;
+            int maxBufferSize = 1 * 1024 * 1024;
+
+            String[] q = filepath.split("/");
+            int idx = q.length - 1;
+
+            try {
+                if (!this.isInitialized)
+                    throw new APIException(
+                            "NetworkSupport not initialized",
+                            networkErrorMsg + "(앱 초기화 중 문제가 발생했습니다.)",
+                            -1, null);
+
+                if (this.isInternetOffline())
+                    throw new APIException(
+                            "no internet connection",
+                            networkErrorMsg + "(인터넷 연결을 확인해주세요.)",
+                            -1, null);
+
+                File file = new File(filepath);
+                FileInputStream fileInputStream = new FileInputStream(file);
+
+                URL url = new URL(baseUrl + "uploads");
+                HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("User-Agent", System.getProperty("http.agent"));
+                conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setRequestProperty("Connection", "Keep-Alive");
+
+                // Always set X-Csrf-Token header
+                if (csrfToken == null) {
+                    csrfToken = UUID.randomUUID().toString();
+                }
+                conn.setRequestProperty("X-Csrf-Token", csrfToken);
+
+                // Check access token
+                if (accessToken == null || accessToken.isEmpty()) {
+                    throw new APIException(
+                            "Access token is null or empty, but tried accessTokenAuth",
+                            "로그인 정보가 없습니다, 다시 로그인을 해 주세요.",
+                            401, null);
+                }
+                conn.setRequestProperty("Authorization", "Bearer " + this.accessToken);
+
+                outputStream = new DataOutputStream(conn.getOutputStream());
+                outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+                outputStream.writeBytes("Content-Disposition: form-data; name=\"" + filefield + "\"; filename=\"" + q[idx] + "\"" + lineEnd);
+                outputStream.writeBytes("Content-Type: " + fileMimeType + lineEnd);
+                outputStream.writeBytes("Content-Transfer-Encoding: binary" + lineEnd);
+                outputStream.writeBytes(lineEnd);
+
+                bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                buffer = new byte[bufferSize];
+
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                while (bytesRead > 0) {
+                    outputStream.write(buffer, 0, bufferSize);
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                }
+                outputStream.writeBytes(lineEnd);
+
+                // Upload POST Data
+                if (params != null) {
+                    for (String key : params.keySet()) {
+                        String value = params.get(key);
+
+                        outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+                        outputStream.writeBytes("Content-Disposition: form-data; name=\"" + key + "\"" + lineEnd);
+                        outputStream.writeBytes("Content-Type: text/plain" + lineEnd);
+                        outputStream.writeBytes(lineEnd);
+                        outputStream.writeBytes(value);
+                        outputStream.writeBytes(lineEnd);
+                    }
+                }
+
+                outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+                // Do request and get status code
+                int status = conn.getResponseCode();
+                Map<String, List<String>> responseHeaders = conn.getHeaderFields();
+
+                // Try to parse response from server
+                JSONObject responseBodyJson = null;
+                APIResponseBody responseBody = null;
+                InputStream tmpResponse = (200 <= status && status <= 399) ? conn.getInputStream() : conn.getErrorStream();
+
+                if (tmpResponse != null) {
+                    try {
+                        BufferedReader br = new BufferedReader((new InputStreamReader(tmpResponse)));
+                        StringBuffer responseStringBuffer = new StringBuffer();
+
+                        String inputLine;
+                        while ((inputLine = br.readLine()) != null) {
+                            responseStringBuffer.append(inputLine);
+                        }
+                        br.close();
+
+                        responseBodyJson = new JSONObject(responseStringBuffer.toString());
+                        responseBody = new APIResponseBody(
+                                responseBodyJson.getInt("code"),
+                                responseBodyJson.getString("sub_code"),
+                                responseBodyJson.getString("message"),
+                                responseBodyJson.getJSONObject("data"));
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                        System.out.println("Exception raised " + e1.getClass().getName() + " - " + e1.getMessage());
+                    }
+                }
+
+                if (responseBody == null) {
+                    throw new APIException(
+                            "response data is null",
+                            networkErrorRetryAfter10MinMsg + "\n(서버에서 받은 응답이 없거나 해석하는데 문제가 있음)",
+                            status, null);
+                }
+
+                return new APIResponse(status, responseHeaders, responseBody);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new CompletionException(
+                        new APIException(
+                                "error",
+                                networkErrorRetryAfter10MinMsg + "\n(서버와 연결하는데 너무 오래 걸립니다.)",
+                                -1, null));
+            }
+        });
     }
 }

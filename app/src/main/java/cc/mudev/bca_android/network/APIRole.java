@@ -1,5 +1,7 @@
 package cc.mudev.bca_android.network;
 
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -7,8 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 public class APIRole {
-    public class APIRoleException extends Exception {}
-    public class NotThisRoleClassException extends APIRoleException {}
+    public class APIRoleException extends Exception {
+    }
+
+    public class NotThisRoleClassException extends APIRoleException {
+    }
 
     public abstract class APIRoleBase {
         public String type;
@@ -32,31 +37,34 @@ public class APIRole {
             if (roleString != null && roleString.contains("admin")) {
                 this.type = "admin";
                 this.id = -1;
-            } else { throw new NotThisRoleClassException(); }
+            } else {
+                throw new NotThisRoleClassException();
+            }
         }
     }
 
     public class ProfileRole extends APIRoleBase {
         public ProfileRole(String roleString) throws APIRoleException {
             try {
-                Map<String, String> parsedRole = parseRoleString(roleString);
-                if (!parsedRole.containsKey("type") || parsedRole.get("type").equals("profile")) {
+//                Map<String, String> parsedRole = parseRoleString(roleString);
+                JSONObject parsedRole = new JSONObject(roleString);
+                if (!parsedRole.has("type") || !parsedRole.getString("type").equals("profile")) {
                     throw new NotThisRoleClassException();
                 }
 
                 this.type = "profile";
-                this.id = Integer.parseInt(parsedRole.get("id"));
+                this.id = parsedRole.getInt("id");
                 if (this.id <= 0) throw new APIRoleException();
             } catch (NotThisRoleClassException e) {
                 throw e;
             } catch (Exception e) {
-                throw new APIRoleException();
+                throw new NotThisRoleClassException();
             }
-
         }
     }
+
     List<Class<? extends APIRoleBase>> possibleAPIRoles;
-    List<APIRoleBase> role;
+    public List<APIRoleBase> role;
 
     public APIRole(List<String> roleStringList) {
         possibleAPIRoles = new ArrayList<>();
@@ -64,13 +72,18 @@ public class APIRole {
         possibleAPIRoles.add(ProfileRole.class);
 
         role = new ArrayList<>();
-        for(String roleString: roleStringList) {
-            // Try parsing
-            for (Class<? extends APIRoleBase> RoleClass: possibleAPIRoles) {
-                try {
-                    // Black magic of Dynamic Class Construction
-                    role.add(RoleClass.getDeclaredConstructor(String.class).newInstance(roleString));
-                } catch (Exception e) {}
+        for (String roleString : roleStringList) {
+            try {
+                role.add(new ProfileRole(roleString));
+                continue;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                role.add(new AdminRole(roleString));
+                continue;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

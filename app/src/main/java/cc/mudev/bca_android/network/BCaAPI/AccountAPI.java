@@ -1,7 +1,6 @@
 package cc.mudev.bca_android.network.BCaAPI;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,109 +19,66 @@ import cc.mudev.bca_android.service.FCMHandlerService;
 public class AccountAPI {
     public static CompletableFuture<APIResponse> signup(Context context, String id, String pw, String nick, String email) {
         return CompletableFuture.supplyAsync(() -> {
-            if (id == null || id.isEmpty()) {
-                throw new CompletionException(
-                        new APIException(
-                                "id is null or empty",
-                                "아이디를 입력해주세요!",
-                                -1, null));
-            } else if (pw == null || pw.isEmpty()) {
-                throw new CompletionException(
-                        new APIException(
-                                "pw is null or empty",
-                                "비밀번호를 입력해주세요!",
-                                -1, null));
-            } else if (nick == null || nick.isEmpty()) {
-                throw new CompletionException(
-                        new APIException(
-                                "nick is null or empty",
-                                "성함을 입력해주세요!",
-                                -1, null));
-            } else if (email == null || email.isEmpty()) {
-                throw new CompletionException(
-                        new APIException(
-                                "email is null or empty",
-                                "이메일을 입력해주세요!",
-                                -1, null));
-            }
-
-            SharedPref sharedPref = SharedPref.getInstance(context);
-            sharedPref.setPref(SharedPref.SharedPrefKeys.ID, id);
-            sharedPref.setPref(SharedPref.SharedPrefKeys.PASSWORD, pw);
-            sharedPref.setPref(SharedPref.SharedPrefKeys.NICKNAME, nick);
-            sharedPref.setPref(SharedPref.SharedPrefKeys.EMAIL, email);
-
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("id", id);
                 jsonObject.put("nick", nick);
                 jsonObject.put("email", email);
                 jsonObject.put("pw", pw);
+
+                SharedPref sharedPref = SharedPref.getInstance(context);
+                sharedPref.setPref(SharedPref.SharedPrefKeys.ID, id);
+                sharedPref.setPref(SharedPref.SharedPrefKeys.PASSWORD, pw);
+                sharedPref.setPref(SharedPref.SharedPrefKeys.NICKNAME, nick);
+                sharedPref.setPref(SharedPref.SharedPrefKeys.EMAIL, email);
             } catch (JSONException e) {
                 e.printStackTrace();
                 throw new CompletionException(
                         new APIException(
                                 "raised while packing id/pw/nick/email on JSONObject",
                                 "회원가입 중 중 문제가 발생했습니다,\n" +
-                                        "잠시 후 다시 시도해주세요.",
+                                        "잠시 후 다시 시도해주세요",
                                 -1, null));
             }
             return jsonObject;
         }).thenComposeAsync((jsonObject) -> {
-            NetworkSupport api = NetworkSupport.getInstance();
+            NetworkSupport api = NetworkSupport.getInstance(context);
             return api.doPost("account/signup", getClientTokenHeader(context), jsonObject, false, false);
         });
     }
 
     public static CompletableFuture<APIResponse> signin(Context context, String id, String pw) {
         return CompletableFuture.supplyAsync(() -> {
-            if (id == null || id.isEmpty()) {
-                throw new CompletionException(
-                        new APIException(
-                                "id is null or empty",
-                                "아이디나 이메일을 입력해주세요!",
-                                -1, null));
-            } else if (pw == null || pw.isEmpty()) {
-                throw new CompletionException(
-                        new APIException(
-                                "pw is null or empty",
-                                "비밀번호를 입력해주세요!",
-                                -1, null));
-            }
-
-            SharedPref sharedPref = SharedPref.getInstance(context);
-            sharedPref.setPref(SharedPref.SharedPrefKeys.ID, id);
-            sharedPref.setPref(SharedPref.SharedPrefKeys.PASSWORD, pw);
-
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("id", id);
                 jsonObject.put("pw", pw);
+
+                SharedPref sharedPref = SharedPref.getInstance(context);
+                sharedPref.setPref(SharedPref.SharedPrefKeys.ID, id);
+                sharedPref.setPref(SharedPref.SharedPrefKeys.PASSWORD, pw);
             } catch (JSONException e) {
                 e.printStackTrace();
                 throw new CompletionException(
                         new APIException(
                                 "raised while packing id/pw on JSONObject",
                                 "로그인 중 문제가 발생했습니다,\n" +
-                                        "잠시 후 다시 시도해주세요.",
+                                        "잠시 후 다시 시도해주세요",
                                 -1, null));
             }
             return jsonObject;
         }).thenComposeAsync((jsonObject) -> {
-            NetworkSupport api = NetworkSupport.getInstance();
-            return api.doPost("account/signin", getClientTokenHeader(context), jsonObject, false, false).thenApplyAsync((response) -> {
+            NetworkSupport api = NetworkSupport.getInstance(context);
+            return api.doPost("account/signin", getClientTokenHeader(context), jsonObject, false, false)
+                    .thenApplyAsync((response) -> {
                         SharedPref sharedPref = SharedPref.getInstance(context);
                         try {
                             sharedPref.setPref(SharedPref.SharedPrefKeys.EMAIL, response.body.data.getJSONObject("user").getString("email"));
-                        } catch (Exception e) {
-                        }
-                        try {
                             sharedPref.setPref(SharedPref.SharedPrefKeys.NICKNAME, response.body.data.getJSONObject("user").getString("nickname"));
                         } catch (Exception e) {
                         }
                         return response;
-                    }
-            );
+                    });
         });
     }
 
@@ -144,13 +100,34 @@ public class AccountAPI {
 
             return jsonObject;
         }).thenComposeAsync((jsonObject) -> {
-            NetworkSupport api = NetworkSupport.getInstance();
-            return api.doPost("account/signout", null, jsonObject, false, false);
+            NetworkSupport api = NetworkSupport.getInstance(context);
+            return api.doPost("account/signout", null, jsonObject, true, true);
+        });
+    }
+
+    public static CompletableFuture<APIResponse> sendPasswordResetMail(Context context, String email) {
+        return CompletableFuture.supplyAsync(() -> {
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("email", email);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                throw new CompletionException(
+                        new APIException(
+                                "raised while packing email on JSONObject",
+                                "비밀번호를 초기화할 수 있는 메일을 보내는 중 문제가 발생했습니다,\n" +
+                                        "잠시 후 다시 시도해주세요.",
+                                -1, null));
+            }
+            return jsonObject;
+        }).thenComposeAsync((jsonObject) -> {
+            NetworkSupport api = NetworkSupport.getInstance(context);
+            return api.doPost("account/reset-password", null, jsonObject, false, false);
         });
     }
 
     public static CompletableFuture<Boolean> isRefreshSuccess(Context context) {
-        NetworkSupport api = NetworkSupport.getInstance();
+        NetworkSupport api = NetworkSupport.getInstance(context);
         return api.doPost("account/refresh", getClientTokenHeader(context), null, true, false)
                 .thenApplyAsync((response) -> true)
                 .exceptionally((e) -> {
@@ -164,7 +141,7 @@ public class AccountAPI {
         try {
             headers.put("X-Client-Token", FCMHandlerService.getToken(context));
         } catch (Exception e) {
-            // Just ignore, but this client cannot receive any notifications.
+            // Just ignore, but this client won't be able to receive any notifications.
             e.printStackTrace();
         }
         return headers;
