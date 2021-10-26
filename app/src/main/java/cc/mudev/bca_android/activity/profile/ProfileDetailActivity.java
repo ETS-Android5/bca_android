@@ -54,6 +54,13 @@ public class ProfileDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile_detail);
 
         this.toolbar = findViewById(R.id.ac_profileDetail_toolbar);
+        this.toolbar.setNavigationOnClickListener((v) -> {
+            // I don't know why, I don't want to know why, I shouldn't
+            // have to wonder why, but for whatever reason this stupid
+            // recyclerview do reordering when we try to supportFinishAfterTransition
+            //  supportFinishAfterTransition();
+            finish();
+        });
         this.profileImageView = findViewById(R.id.ac_profileDetail_profileImageView);
         this.profileDescriptionText = findViewById(R.id.ac_profileDetail_teamNameText);
         this.infoRecyclerView = findViewById(R.id.ac_profileDetail_profileInfoRecyclerView);
@@ -188,13 +195,6 @@ public class ProfileDetailActivity extends AppCompatActivity {
 
     public void setupToolbarTitle(String title, String teamName, String imageUrl) {
         this.toolbar.setTitle(title);
-        this.toolbar.setNavigationOnClickListener((v) -> {
-            // I don't know why, I don't want to know why, I shouldn't
-            // have to wonder why, but for whatever reason this stupid
-            // recyclerview do reordering when we try to supportFinishAfterTransition
-            //  supportFinishAfterTransition();
-            finish();
-        });
 
         // Setup profile's cards
         if (!TextUtils.isEmpty(teamName))
