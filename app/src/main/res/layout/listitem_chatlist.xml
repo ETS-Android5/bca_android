@@ -8,9 +8,10 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="72dp"
         android:padding="12dp"
         android:orientation="horizontal"
+        android:layout_gravity="center_vertical"
         android:gravity="center_vertical">
 
         <LinearLayout
@@ -22,8 +23,8 @@
 
             <com.mikhaellopez.circularimageview.CircularImageView
                 android:id="@+id/li_chatList_roomImg"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_gravity="center"
                 app:civ_border="false"
                 android:scaleType="fitCenter"
@@ -41,17 +42,17 @@
                 android:id="@+id/li_chatList_roomNameText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:textColor="@color/black"
                 android:maxLines="1"
+                android:textColor="@color/black"
+                android:textSize="16sp"
                 android:text="장서희" />
 
             <TextView
                 android:id="@+id/li_chatList_latestMessageText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
                 android:maxLines="1"
+                android:textSize="12sp"
                 android:text="10월 1일까지 이메일로 프로젝트 계획서를 ..." />
 
         </LinearLayout>
