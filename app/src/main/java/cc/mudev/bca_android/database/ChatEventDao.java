@@ -13,7 +13,7 @@ public interface ChatEventDao {
     @Query("SELECT * FROM TB_CHAT_EVENT WHERE room_id = (:roomId)")
     LiveData<List<TB_CHAT_EVENT>> getAllRoomEventsLive(int roomId);
 
-    @Query("SELECT * FROM TB_CHAT_EVENT WHERE room_id = (:roomId)")
+    @Query("SELECT * FROM TB_CHAT_EVENT WHERE room_id = (:roomId) ORDER BY uuid")
     List<TB_CHAT_EVENT> getAllRoomEvents(int roomId);
 
     @Query("SELECT * FROM TB_CHAT_EVENT WHERE room_id = (:roomId) AND event_type = \"MESSAGE_POSTED\" ORDER BY uuid LIMIT 1")
