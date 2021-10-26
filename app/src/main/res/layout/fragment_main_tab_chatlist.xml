@@ -55,6 +55,18 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 
+    <TextView
+        android:id="@+id/fr_chatList_noChatListMsg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/fr_chatList_divider1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textAlignment="center"
+        android:visibility="gone"
+        android:text="현재 참여중인 채팅방이 없습니다.\n위의 + 버튼을 눌러서 새 채팅을 시작해보세요!" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fr_chatList_chatListRecyclerView"
         android:layout_width="match_parent"

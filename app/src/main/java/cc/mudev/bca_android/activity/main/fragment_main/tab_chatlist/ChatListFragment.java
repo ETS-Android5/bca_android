@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -57,7 +58,7 @@ public class ChatListFragment extends Fragment {
 
         ArrayList<ChatRoomListData> chatRoomList = new ArrayList<>();
         if (NetworkSupport.getInstance(appContext).getCurrentProfileId() == 1) {
-            
+
             chatRoomList.add(new ChatRoomListData("김정환", "그건 모르지 ㅋㅋㅋㅋ", 0));
             chatRoomList.add(new ChatRoomListData("신정은 선생님", "없을경우 등록 확인해보시길 바랍니다.", 0));
             chatRoomList.add(new ChatRoomListData("임수만 부장님", "알겠습니다.", 0));
@@ -86,6 +87,11 @@ public class ChatListFragment extends Fragment {
             appContext.startActivity(chatRoomIntent);
         });
         recyclerView.setAdapter(adapter);
+
+        if (chatRoomList.isEmpty()) {
+            recyclerView.setVisibility(View.INVISIBLE);
+            ((TextView)root.findViewById(R.id.fr_chatList_noChatListMsg)).setVisibility(View.VISIBLE);
+        }
 
         return root;
     }

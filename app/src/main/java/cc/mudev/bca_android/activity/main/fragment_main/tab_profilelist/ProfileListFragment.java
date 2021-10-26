@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityOptionsCompat;
@@ -59,6 +60,11 @@ public class ProfileListFragment extends Fragment {
         });
         recyclerView.setAdapter(adapter);
         adapter.refreshData(appContext);
+
+        if (adapter.infoListData.isEmpty()) {
+            recyclerView.setVisibility(View.INVISIBLE);
+            ((TextView)root.findViewById(R.id.fr_profileList_noProfileListMsg)).setVisibility(View.VISIBLE);
+        }
 
         return root;
     }

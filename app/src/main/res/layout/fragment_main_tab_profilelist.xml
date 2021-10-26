@@ -61,6 +61,18 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
+    <TextView
+        android:id="@+id/fr_profileList_noProfileListMsg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/fr_profileList_divider1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textAlignment="center"
+        android:visibility="gone"
+        android:text="현재 팔로우 중인 프로필이 없습니다.\n\'팔로우 할 프로필 추가\'버튼을 눌러서\n다른 사람들의 프로필을 팔로우해보세요!" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fr_profileList_profileRecyclerView"
         android:layout_height="0dp"
