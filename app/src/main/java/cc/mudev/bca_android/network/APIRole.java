@@ -77,13 +77,11 @@ public class APIRole {
                 role.add(new ProfileRole(roleString));
                 continue;
             } catch (Exception e) {
-                e.printStackTrace();
             }
             try {
                 role.add(new AdminRole(roleString));
                 continue;
             } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }
