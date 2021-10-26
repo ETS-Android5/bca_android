@@ -3,6 +3,9 @@ package cc.mudev.bca_android.activity.main.fragment_main.tab_chatlist;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,9 +32,11 @@ import cc.mudev.bca_android.database.ChatDatabase;
 import cc.mudev.bca_android.database.TB_CHAT_EVENT;
 import cc.mudev.bca_android.database.TB_CHAT_ROOM;
 import cc.mudev.bca_android.databinding.FragmentMainTabChatlistBinding;
+import cc.mudev.bca_android.network.BCaAPI.ChatAPI;
 import cc.mudev.bca_android.network.NetworkSupport;
 
 public class ChatListFragment extends Fragment {
+    private static final String TAG = "ChatListFragment";
     private FragmentMainTabChatlistBinding binding;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,42 +48,14 @@ public class ChatListFragment extends Fragment {
         Toolbar toolbar = root.findViewById(R.id.fr_chatList_toolbar);
         toolbar.setNavigationOnClickListener((view) -> ((DrawerLayout) parentFragmentActivity.findViewById(R.id.main_drawerLayout)).openDrawer(GravityCompat.START));
         toolbar.setOnMenuItemClickListener((item) -> {
-            switch (item.getItemId()) {
-                case R.id.to_chatList_createNewRoomMenu: {
-                    // Goto chat room create activity
-                    Intent chatCreateIntent = new Intent(appContext, ChatCreateActivity.class);
-                    appContext.startActivity(chatCreateIntent);
-                    break;
-                }
-                default:
-                    break;
+            if (item.getItemId() == R.id.to_chatList_createNewRoomMenu) {// Goto chat room create activity
+                Intent chatCreateIntent = new Intent(appContext, ChatCreateActivity.class);
+                appContext.startActivity(chatCreateIntent);
             }
             return true;
         });
 
         ArrayList<ChatRoomListData> chatRoomList = new ArrayList<>();
-        if (NetworkSupport.getInstance(appContext).getCurrentProfileId() == 1) {
-
-            chatRoomList.add(new ChatRoomListData("김정환", "그건 모르지 ㅋㅋㅋㅋ", 0));
-            chatRoomList.add(new ChatRoomListData("신정은 선생님", "없을경우 등록 확인해보시길 바랍니다.", 0));
-            chatRoomList.add(new ChatRoomListData("임수만 부장님", "알겠습니다.", 0));
-            chatRoomList.add(new ChatRoomListData("임수만 부장님", "알겠습니다.", 0));
-            chatRoomList.add(new ChatRoomListData("뼈돌이", "ㅇㅋㅇㅋ", 0));
-            chatRoomList.add(new ChatRoomListData("박주아", "없는 줄 알았는데 가방 뒤져보니 나오네요ㅠㅜ", 1));
-            chatRoomList.add(new ChatRoomListData("최성훈", "도감 포기한지 오랩니다 ㅋㅋㅋ", 310));
-            chatRoomList.add(new ChatRoomListData("장서희", "보냈습니다. 즐거운 하루 되시길 바랍니다.", 1));
-            chatRoomList.add(new ChatRoomListData("김지성", "ㅇㅇ 내일 근육통 심할듯ㅋㅋㅋㅋ", 290));
-            Collections.sort(chatRoomList);
-        } else {
-            ChatDatabase chatDB = ChatDatabase.getInstance(appContext);
-            int currentProfileId = NetworkSupport.getInstance(appContext).getCurrentProfileId();
-            List<TB_CHAT_ROOM> chatRooms = chatDB.roomDao().getAllChatRoom(currentProfileId);
-            for (TB_CHAT_ROOM chatRoom : chatRooms) {
-                TB_CHAT_EVENT latestMessage = chatDB.eventDao().getLatestMessage(chatRoom.uuid);
-                chatRoomList.add(new ChatRoomListData(chatRoom.name, latestMessage.message, 0));
-            }
-        }
-
         RecyclerView recyclerView = root.findViewById(R.id.fr_chatList_chatListRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(appContext));
         ChatRoomListAdapter adapter = new ChatRoomListAdapter(chatRoomList);
@@ -88,11 +65,34 @@ public class ChatListFragment extends Fragment {
         });
         recyclerView.setAdapter(adapter);
 
-        if (chatRoomList.isEmpty()) {
-            recyclerView.setVisibility(View.INVISIBLE);
-            ((TextView)root.findViewById(R.id.fr_chatList_noChatListMsg)).setVisibility(View.VISIBLE);
-        }
+        try {
+            ChatAPI.updateChatRoom(appContext)
+                    .thenAcceptAsync((response) -> {
+                        ChatDatabase chatDB = ChatDatabase.getInstance(appContext);
+                        int currentProfileId = NetworkSupport.getInstance(appContext).getCurrentProfileId();
+                        List<TB_CHAT_ROOM> chatRooms = chatDB.roomDao().getAllChatRoom(currentProfileId);
+                        for (TB_CHAT_ROOM chatRoom : chatRooms) {
+                            TB_CHAT_EVENT latestMessage = chatDB.eventDao().getLatestMessage(chatRoom.uuid);
+                            String latestMessageStr = (latestMessage != null) ? latestMessage.message : "";
+                            chatRoomList.add(new ChatRoomListData(chatRoom.name, latestMessageStr, 0));
+                        }
+                    })
+                    .exceptionally((e) -> {
+                        e.printStackTrace();
+                        return null;
+                    })
+                    .whenCompleteAsync((result, ex) ->
+                            (new Handler(Looper.getMainLooper())).postDelayed(() -> {
+                                adapter.notifyDataSetChanged();
 
+                                if (chatRoomList.isEmpty()) {
+                                    recyclerView.setVisibility(View.INVISIBLE);
+                                    root.findViewById(R.id.fr_chatList_noChatListMsg).setVisibility(View.VISIBLE);
+                                }
+                            }, 0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return root;
     }
 
