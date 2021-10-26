@@ -71,15 +71,19 @@ public class ChatRoomListAdapter extends RecyclerView.Adapter<ChatRoomListAdapte
         ChatRoomListData chatRoomData = chatRoomListData.get(position);
         holder.chatRoomData = chatRoomData;
         holder.chatRoomNameText.setText(chatRoomData.name);
-        holder.chatRoomLatestMessageText.setText(chatRoomData.latestMessage);
-        holder.chatRoomUnseenMessageCountText.setText(
-            (chatRoomData.unseenMessageCount <= 300)
-                ? Integer.toString(chatRoomData.unseenMessageCount)
-                : "300+");
+        if (!TextUtils.isEmpty(chatRoomData.latestMessage)) {
+            holder.chatRoomLatestMessageText.setText(chatRoomData.latestMessage);
+        } else {
+            holder.chatRoomLatestMessageText.setVisibility(View.GONE);
+        }
         if (chatRoomData.unseenMessageCount == 0) {
             holder.chatRoomUnseenMessageCountText.setVisibility(View.GONE);
         } else {
             holder.chatRoomUnseenMessageCountText.setVisibility(View.VISIBLE);
+            holder.chatRoomUnseenMessageCountText.setText(
+                    (chatRoomData.unseenMessageCount <= 300)
+                            ? Integer.toString(chatRoomData.unseenMessageCount)
+                            : "300+");
         }
     }
 
