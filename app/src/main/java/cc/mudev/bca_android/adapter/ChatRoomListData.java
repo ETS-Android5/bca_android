@@ -1,10 +1,12 @@
 package cc.mudev.bca_android.adapter;
 
 public class ChatRoomListData implements Comparable<ChatRoomListData> {
+    public int uuid;
     public String name, latestMessage;
     public int unseenMessageCount;
 
-    public ChatRoomListData(String name, String latestMessage, int unseenMessageCount) {
+    public ChatRoomListData(int uuid, String name, String latestMessage, int unseenMessageCount) {
+        this.uuid = uuid;
         this.name = name;
         this.latestMessage = latestMessage;
         this.unseenMessageCount = unseenMessageCount;

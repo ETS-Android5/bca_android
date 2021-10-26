@@ -61,6 +61,7 @@ public class ChatListFragment extends Fragment {
         ChatRoomListAdapter adapter = new ChatRoomListAdapter(chatRoomList);
         adapter.setOnItemClickListener((view, position) -> {
             Intent chatRoomIntent = new Intent(appContext, ChatRoomActivity.class);
+            chatRoomIntent.putExtra("chatId", chatRoomList.get(position).uuid);
             appContext.startActivity(chatRoomIntent);
         });
         recyclerView.setAdapter(adapter);
@@ -74,7 +75,7 @@ public class ChatListFragment extends Fragment {
                         for (TB_CHAT_ROOM chatRoom : chatRooms) {
                             TB_CHAT_EVENT latestMessage = chatDB.eventDao().getLatestMessage(chatRoom.uuid);
                             String latestMessageStr = (latestMessage != null) ? latestMessage.message : "";
-                            chatRoomList.add(new ChatRoomListData(chatRoom.name, latestMessageStr, 0));
+                            chatRoomList.add(new ChatRoomListData(chatRoom.uuid, chatRoom.name, latestMessageStr, 0));
                         }
                     })
                     .exceptionally((e) -> {
