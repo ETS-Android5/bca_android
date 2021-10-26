@@ -2,6 +2,7 @@ package cc.mudev.bca_android.activity.chat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +23,10 @@ import cc.mudev.bca_android.adapter.ProfileFollowingAdapter;
 import cc.mudev.bca_android.adapter.ProfileFollowingData;
 import cc.mudev.bca_android.database.ChatDatabase;
 import cc.mudev.bca_android.database.TB_CHAT_ROOM;
+import cc.mudev.bca_android.network.APIException;
+import cc.mudev.bca_android.network.APIResponseBody;
 import cc.mudev.bca_android.network.BCaAPI.ChatAPI;
+import cc.mudev.bca_android.util.AlertDialogGenerator;
 
 public class ChatCreateActivity extends AppCompatActivity {
     private static final String ERROR_DIALOG_TITLE = "채팅방을 만들 수 없어요";
@@ -69,6 +73,7 @@ public class ChatCreateActivity extends AppCompatActivity {
             chatInvitedProfileAdapter.notifyItemInserted(chatInvitedProfileList.size() - 1);
             chatInvitedProfileRecyclerView.scrollToPosition(chatInvitedProfileAdapter.getItemCount() - 1);
         });
+        profileFollowingAdapter.refreshData(ChatCreateActivity.this);
 
         Button createRoomBtn = findViewById(R.id.ac_chatCreate_createRoomBtn);
         createRoomBtn.setOnClickListener((view) -> {
@@ -77,59 +82,64 @@ public class ChatCreateActivity extends AppCompatActivity {
             for (ChatInvitedProfileData profileData : chatInvitedProfileList)
                 invitedProfileIdList.add(profileData.profileId);
 
+            if (invitedProfileIdList.isEmpty()) {
+                AlertDialogGenerator.gen(ChatCreateActivity.this, ERROR_DIALOG_TITLE, "같이 채팅할 인원을 선택해주세요");
+                return;
+            }
+
             // TODO: Rewrite below
-            String profileListString = "";
             try {
-                profileListString = (new JSONArray(invitedProfileIdList)).toString();
+                String profileListString = (new JSONArray(invitedProfileIdList)).toString();
                 ChatAPI.createChatRoom(ChatCreateActivity.this, profileListString)
-                        .thenComposeAsync((response1) -> {
+                        .thenAcceptAsync((response2) -> {
                             try {
-                                return ChatAPI.updateChatRoom(ChatCreateActivity.this)
-                                        .thenAcceptAsync((response) -> {
-                                            try {
-                                                JSONArray roomDataArray = response.body.data.getJSONArray("chat_rooms");
-                                                for (int i = 0; i < roomDataArray.length(); i++) {
-                                                    JSONObject roomData = roomDataArray.getJSONObject(i);
+                                JSONArray roomDataArray = response2.body.data.getJSONArray("chat_rooms");
+                                for (int i = 0; i < roomDataArray.length(); i++) {
+                                    JSONObject roomData = roomDataArray.getJSONObject(i);
 
-                                                    ChatDatabase.getInstance(ChatCreateActivity.this).roomDao().insertRoom(
-                                                            new TB_CHAT_ROOM(
-                                                                    roomData.getInt("uuid"),
-                                                                    roomData.getString("name"),
-                                                                    null,
-                                                                    roomData.getInt("created_by_profile_id"),
-                                                                    roomData.getString("commit_id"),
-                                                                    roomData.getInt("created_at_int"),
-                                                                    roomData.getInt("modified_at_int"),
-                                                                    null,
-                                                                    0,
-                                                                    0
-                                                            )
-                                                    );
-                                                    Intent chatRoomIntent = new Intent(ChatCreateActivity.this, ChatRoomActivity.class);
-                                                    chatRoomIntent.putExtra("roomId", response1.body.data.getJSONObject("chat_room").getInt("uuid"));
-                                                    startActivity(chatRoomIntent);
-                                                    finish();
-                                                }
-
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-                                        })
-                                        .exceptionally((e) -> {
-                                            e.printStackTrace();
-                                            return null;
-                                        });
+                                    ChatDatabase.getInstance(ChatCreateActivity.this).roomDao().insertRoom(
+                                            new TB_CHAT_ROOM(
+                                                    roomData.getInt("uuid"),
+                                                    roomData.getString("name"),
+                                                    null,
+                                                    roomData.getInt("created_by_profile_id"),
+                                                    roomData.getString("commit_id"),
+                                                    roomData.getInt("created_at_int"),
+                                                    roomData.getInt("modified_at_int"),
+                                                    null,
+                                                    0,
+                                                    0
+                                            )
+                                    );
+                                    Intent chatRoomIntent = new Intent(ChatCreateActivity.this, ChatRoomActivity.class);
+                                    chatRoomIntent.putExtra("roomId", response2.body.data.getJSONObject("chat_room").getInt("uuid"));
+                                    startActivity(chatRoomIntent);
+                                    finish();
+                                }
                             } catch (Exception e) {
                                 throw new CompletionException(e);
                             }
                         })
                         .exceptionally((e) -> {
                             e.printStackTrace();
+                            Throwable origExc = e.getCause();
+                            if (origExc == null)
+                                return null;
+
+                            if (origExc instanceof APIException) {
+                                APIResponseBody respBody = ((APIException) origExc).body;
+                                if (respBody == null)
+                                    return null;
+
+                                if (!TextUtils.isEmpty(respBody.message))
+                                    AlertDialogGenerator.gen(ChatCreateActivity.this, ERROR_DIALOG_TITLE, respBody.message);
+                            }
                             return null;
                         });
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
+
     }
 }
