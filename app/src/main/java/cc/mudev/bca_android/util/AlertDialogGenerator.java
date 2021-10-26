@@ -96,17 +96,14 @@ public class AlertDialogGenerator {
             String negativeButtonTitle, Drawable negativeButtonIcon, DialogInterface.OnClickListener onNegativeButtonClicked,
             String neutralButtonTitle, Drawable neutralButtonIcon, DialogInterface.OnClickListener onNeutralButtonClicked
     ) {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(() -> {
-            generateAlertDialog(
-                    context,
-                    title, body,
-                    swapPositiveNegativeButtonOrder,
-                    positiveButtonTitle, positiveButtonIcon, onPositiveButtonClicked,
-                    negativeButtonTitle, negativeButtonIcon, onNegativeButtonClicked,
-                    neutralButtonTitle, neutralButtonIcon, onNeutralButtonClicked
-            ).create().show();
-        }, 0);
+        (new Handler(Looper.getMainLooper())).postDelayed(() -> generateAlertDialog(
+                context,
+                title, body,
+                swapPositiveNegativeButtonOrder,
+                positiveButtonTitle, positiveButtonIcon, onPositiveButtonClicked,
+                negativeButtonTitle, negativeButtonIcon, onNegativeButtonClicked,
+                neutralButtonTitle, neutralButtonIcon, onNeutralButtonClicked
+        ).create().show(), 0);
     }
 
     public static AlertDialog.Builder generateAlertDialog(
