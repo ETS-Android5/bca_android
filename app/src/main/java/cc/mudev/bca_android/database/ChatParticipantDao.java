@@ -1,6 +1,8 @@
 package cc.mudev.bca_android.database;
 
 import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 @Dao
@@ -14,4 +16,6 @@ public interface ChatParticipantDao {
     @Query("SELECT room_name FROM TB_CHAT_PARTICIPANT WHERE room_id = (:roomId) AND profile_id = (:profileId)")
     String getRoomNameUsingProfileID(int roomId, int profileId);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertParticipant(TB_CHAT_PARTICIPANT participant);
 }

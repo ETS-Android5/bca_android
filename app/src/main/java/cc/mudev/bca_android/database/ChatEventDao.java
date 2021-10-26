@@ -16,9 +16,9 @@ public interface ChatEventDao {
     @Query("SELECT * FROM TB_CHAT_EVENT WHERE room_id = (:roomId)")
     List<TB_CHAT_EVENT> getAllRoomEvents(int roomId);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertEvent(TB_CHAT_EVENT event);
-
     @Query("SELECT * FROM TB_CHAT_EVENT WHERE room_id = (:roomId) AND event_type = \"MESSAGE_POSTED\" ORDER BY uuid LIMIT 1")
     TB_CHAT_EVENT getLatestMessage(int roomId);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertEvent(TB_CHAT_EVENT event);
 }
