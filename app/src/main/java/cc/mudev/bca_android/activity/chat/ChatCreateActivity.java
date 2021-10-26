@@ -91,31 +91,12 @@ public class ChatCreateActivity extends AppCompatActivity {
             try {
                 String profileListString = (new JSONArray(invitedProfileIdList)).toString();
                 ChatAPI.createChatRoom(ChatCreateActivity.this, profileListString)
-                        .thenAcceptAsync((response2) -> {
+                        .thenAcceptAsync((response) -> {
                             try {
-                                JSONArray roomDataArray = response2.body.data.getJSONArray("chat_rooms");
-                                for (int i = 0; i < roomDataArray.length(); i++) {
-                                    JSONObject roomData = roomDataArray.getJSONObject(i);
-
-                                    ChatDatabase.getInstance(ChatCreateActivity.this).roomDao().insertRoom(
-                                            new TB_CHAT_ROOM(
-                                                    roomData.getInt("uuid"),
-                                                    roomData.getString("name"),
-                                                    null,
-                                                    roomData.getInt("created_by_profile_id"),
-                                                    roomData.getString("commit_id"),
-                                                    roomData.getInt("created_at_int"),
-                                                    roomData.getInt("modified_at_int"),
-                                                    null,
-                                                    0,
-                                                    0
-                                            )
-                                    );
-                                    Intent chatRoomIntent = new Intent(ChatCreateActivity.this, ChatRoomActivity.class);
-                                    chatRoomIntent.putExtra("roomId", response2.body.data.getJSONObject("chat_room").getInt("uuid"));
-                                    startActivity(chatRoomIntent);
-                                    finish();
-                                }
+                                Intent chatRoomIntent = new Intent(ChatCreateActivity.this, ChatRoomActivity.class);
+                                chatRoomIntent.putExtra("roomId", response.body.data.getJSONObject("chat_room").getInt("uuid"));
+                                startActivity(chatRoomIntent);
+                                finish();
                             } catch (Exception e) {
                                 throw new CompletionException(e);
                             }
@@ -131,8 +112,14 @@ public class ChatCreateActivity extends AppCompatActivity {
                                 if (respBody == null)
                                     return null;
 
-                                if (!TextUtils.isEmpty(respBody.message))
-                                    AlertDialogGenerator.gen(ChatCreateActivity.this, ERROR_DIALOG_TITLE, respBody.message);
+                                AlertDialogGenerator.gen(
+                                        ChatCreateActivity.this,
+                                        ERROR_DIALOG_TITLE,
+                                        (!TextUtils.isEmpty(respBody.message))
+                                                ? respBody.message
+                                                : (!TextUtils.isEmpty(((APIException) origExc).displayMsg))
+                                                ? ((APIException) origExc).displayMsg
+                                                : "알 수 없는 문제가 발생했습니다,\n잠시 후 다시 시도해주세요.");
                             }
                             return null;
                         });
