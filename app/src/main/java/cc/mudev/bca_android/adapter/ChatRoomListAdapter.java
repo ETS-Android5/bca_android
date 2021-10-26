@@ -1,5 +1,6 @@
 package cc.mudev.bca_android.adapter;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,14 +42,11 @@ public class ChatRoomListAdapter extends RecyclerView.Adapter<ChatRoomListAdapte
             chatRoomImage = itemView.findViewById(R.id.li_chatList_roomImg);
             chatRoomUnseenMessageCountText = itemView.findViewById(R.id.li_chatList_unseenMessageCountText);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int pos = getAdapterPosition() ;
-                    if (pos != RecyclerView.NO_POSITION) {
-                        if (mListener != null) {
-                            mListener.onItemClick(view, pos) ;
-                        }
+            itemView.setOnClickListener(view -> {
+                int pos = getAdapterPosition() ;
+                if (pos != RecyclerView.NO_POSITION) {
+                    if (mListener != null) {
+                        mListener.onItemClick(view, pos) ;
                     }
                 }
             });
